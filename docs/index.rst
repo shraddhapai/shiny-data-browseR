@@ -6,7 +6,6 @@
 Welcome to Shiny Genome Browse-R's documentation!
 =================================================
 
-Contents:
 
 .. toctree::
    :maxdepth: 2
