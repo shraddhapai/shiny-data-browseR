@@ -9,13 +9,11 @@ Welcome to Shiny Genome Browse-R's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
-Main topics:
-1. Install the browser
-2. Set up your data
-3. Add new annotation sources
-4. Navigating the browser
-
+   install
+   add_data
+   add_annotation
 
 
 
