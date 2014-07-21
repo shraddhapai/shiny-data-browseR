@@ -12,8 +12,6 @@ Welcome to Shiny Genome Browse-R's documentation!
    :numbered:
 
    install
-   add_data
-   add_annotation
 
 
 
