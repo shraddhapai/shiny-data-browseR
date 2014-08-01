@@ -12,8 +12,12 @@ Welcome to Shiny Genome Browse-R's documentation!
    :numbered:
 
    install
+   basic_view
+   add_datatype
 
 
+Please send feedback to Shraddha Pai TODO add email address
+This website best viewed at 1024x??? resolution.
 
 Indices and tables
 ==================

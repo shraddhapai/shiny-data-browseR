@@ -1,0 +1,25 @@
+.._add_datatype: 
+
+============================
+Add a new datatype 
+============================
+
+The Shiny Browse-R is easily customizable to show data from a new platform; all that is required is the addition of a platform-specific .R file in the code directory. For illustration, let us suppose we want to add a new datatype of 450K microarrays.
+
+These steps will allow a new 'datatype' value to be specified in a :ref:`dataset config <add-data-config>` file. In our example, let that datatype be "FourFiftyK".
+
+#. Create FourFiftyK.R in the ``data_types`` directory; the latter is at the same level with ui.R and server.R)
+#. In FourFiftyK.R, create an R function, fetchData_base() with the following signature::
+
+	fetchData_base <- function
+	(
+	pheno, 		##<<(data.frame) phenotype matrix
+	selRange, 	##<<(GRanges) range being viewed on browser
+	numBins,	##<< (integer) num. bins
+	aggFUN
+	) {
+		# fetch code goes here.
+	
+	### (list)
+	}
+Blah blah

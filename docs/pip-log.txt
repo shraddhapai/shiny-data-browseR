@@ -1,0 +1,113 @@
+Downloading/unpacking sphinxcontrib-fulltoc
+  Getting page http://pypi.python.org/simple/sphinxcontrib-fulltoc
+  URLs to search for versions for sphinxcontrib-fulltoc:
+  * http://pypi.python.org/simple/sphinxcontrib-fulltoc
+  Analyzing links from page https://pypi.python.org/simple/sphinxcontrib-fulltoc/
+    Found link https://pypi.python.org/packages/source/s/sphinxcontrib-fulltoc/sphinxcontrib-fulltoc-1.0.tar.gz#md5=729a9da6d8cabfc0c4cdf732d2d6e021 (from https://pypi.python.org/simple/sphinxcontrib-fulltoc/), version: 1.0
+    Skipping link http://sphinx.pocoo.org (from https://pypi.python.org/simple/sphinxcontrib-fulltoc/); not a file
+    Skipping link http://sphinxcontrib-fulltoc.readthedocs.org (from https://pypi.python.org/simple/sphinxcontrib-fulltoc/); not a file
+  Downloading sphinxcontrib-fulltoc-1.0.tar.gz
+  Downloading from URL https://pypi.python.org/packages/source/s/sphinxcontrib-fulltoc/sphinxcontrib-fulltoc-1.0.tar.gz#md5=729a9da6d8cabfc0c4cdf732d2d6e021 (from https://pypi.python.org/simple/sphinxcontrib-fulltoc/)
+  Running setup.py egg_info for package sphinxcontrib-fulltoc
+    running egg_info
+    creating pip-egg-info/sphinxcontrib_fulltoc.egg-info
+    writing requirements to pip-egg-info/sphinxcontrib_fulltoc.egg-info/requires.txt
+    writing pip-egg-info/sphinxcontrib_fulltoc.egg-info/PKG-INFO
+    writing namespace_packages to pip-egg-info/sphinxcontrib_fulltoc.egg-info/namespace_packages.txt
+    writing top-level names to pip-egg-info/sphinxcontrib_fulltoc.egg-info/top_level.txt
+    writing dependency_links to pip-egg-info/sphinxcontrib_fulltoc.egg-info/dependency_links.txt
+    writing manifest file 'pip-egg-info/sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+    warning: manifest_maker: standard file '-c' not found
+    reading manifest file 'pip-egg-info/sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    writing manifest file 'pip-egg-info/sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+  Source in ./build/sphinxcontrib-fulltoc has version 1.0, which satisfies requirement sphinxcontrib-fulltoc
+Requirement already satisfied: Sphinx>=0.6 in /usr/lib/pymodules/python2.6 (from sphinxcontrib-fulltoc)
+Requirement already satisfied: docutils>=0.6 in /usr/lib/pymodules/python2.6 (from sphinxcontrib-fulltoc)
+Requirement already satisfied: Pygments>=0.8 in /usr/lib/pymodules/python2.6 (from Sphinx>=0.6->sphinxcontrib-fulltoc)
+Requirement already satisfied: Jinja2>=2.1 in /usr/lib/pymodules/python2.6 (from Sphinx>=0.6->sphinxcontrib-fulltoc)
+Installing collected packages: docutils, Jinja2, Pygments, Sphinx, sphinxcontrib-fulltoc
+  Running setup.py install for sphinxcontrib-fulltoc
+    Running command /usr/bin/python -c "import setuptools; __file__='/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py'; execfile('/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py')" install --single-version-externally-managed --record /tmp/pip-EAsQ2H-record/install-record.txt --install-headers /home/pai/Documents/shiny-genome-browseR/docs/lib/include
+    running install
+    running build
+    running build_py
+    creating build
+    creating build/lib.linux-x86_64-2.6
+    copying distribute_setup.py -> build/lib.linux-x86_64-2.6
+    creating build/lib.linux-x86_64-2.6/sphinxcontrib
+    copying sphinxcontrib/__init__.py -> build/lib.linux-x86_64-2.6/sphinxcontrib
+    copying sphinxcontrib/fulltoc.py -> build/lib.linux-x86_64-2.6/sphinxcontrib
+    running egg_info
+    writing requirements to sphinxcontrib_fulltoc.egg-info/requires.txt
+    writing sphinxcontrib_fulltoc.egg-info/PKG-INFO
+    writing namespace_packages to sphinxcontrib_fulltoc.egg-info/namespace_packages.txt
+    writing top-level names to sphinxcontrib_fulltoc.egg-info/top_level.txt
+    writing dependency_links to sphinxcontrib_fulltoc.egg-info/dependency_links.txt
+    warning: manifest_maker: standard file '-c' not found
+    reading manifest file 'sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    writing manifest file 'sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+    running install_lib
+    copying distribute_setup.py -> /usr/local/lib/python2.6/dist-packages
+    error: /usr/local/lib/python2.6/dist-packages/distribute_setup.py: Permission denied
+    Complete output from command /usr/bin/python -c "import setuptools; __file__='/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py'; execfile('/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py')" install --single-version-externally-managed --record /tmp/pip-EAsQ2H-record/install-record.txt --install-headers /home/pai/Documents/shiny-genome-browseR/docs/lib/include:
+    running install
+
+running build
+
+running build_py
+
+creating build
+
+creating build/lib.linux-x86_64-2.6
+
+copying distribute_setup.py -> build/lib.linux-x86_64-2.6
+
+creating build/lib.linux-x86_64-2.6/sphinxcontrib
+
+copying sphinxcontrib/__init__.py -> build/lib.linux-x86_64-2.6/sphinxcontrib
+
+copying sphinxcontrib/fulltoc.py -> build/lib.linux-x86_64-2.6/sphinxcontrib
+
+running egg_info
+
+writing requirements to sphinxcontrib_fulltoc.egg-info/requires.txt
+
+writing sphinxcontrib_fulltoc.egg-info/PKG-INFO
+
+writing namespace_packages to sphinxcontrib_fulltoc.egg-info/namespace_packages.txt
+
+writing top-level names to sphinxcontrib_fulltoc.egg-info/top_level.txt
+
+writing dependency_links to sphinxcontrib_fulltoc.egg-info/dependency_links.txt
+
+warning: manifest_maker: standard file '-c' not found
+
+reading manifest file 'sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+
+reading manifest template 'MANIFEST.in'
+
+writing manifest file 'sphinxcontrib_fulltoc.egg-info/SOURCES.txt'
+
+running install_lib
+
+copying distribute_setup.py -> /usr/local/lib/python2.6/dist-packages
+
+error: /usr/local/lib/python2.6/dist-packages/distribute_setup.py: Permission denied
+
+----------------------------------------
+Command /usr/bin/python -c "import setuptools; __file__='/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py'; execfile('/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py')" install --single-version-externally-managed --record /tmp/pip-EAsQ2H-record/install-record.txt --install-headers /home/pai/Documents/shiny-genome-browseR/docs/lib/include failed with error code 1
+Exception information:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/dist-packages/pip.py", line 252, in main
+    self.run(options, args)
+  File "/usr/lib/python2.6/dist-packages/pip.py", line 410, in run
+    requirement_set.install(install_options)
+  File "/usr/lib/python2.6/dist-packages/pip.py", line 2017, in install
+    requirement.install(install_options)
+  File "/usr/lib/python2.6/dist-packages/pip.py", line 1515, in install
+    cwd=self.source_dir, filter_stdout=self._filter_install, show_stdout=False)
+  File "/usr/lib/python2.6/dist-packages/pip.py", line 3543, in call_subprocess
+    % (command_desc, proc.returncode))
+InstallationError: Command /usr/bin/python -c "import setuptools; __file__='/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py'; execfile('/home/pai/Documents/shiny-genome-browseR/docs/build/sphinxcontrib-fulltoc/setup.py')" install --single-version-externally-managed --record /tmp/pip-EAsQ2H-record/install-record.txt --install-headers /home/pai/Documents/shiny-genome-browseR/docs/lib/include failed with error code 1

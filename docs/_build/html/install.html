@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Install the Browse-R &mdash; Shiny Genome Browse-R 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Shiny Genome Browse-R 0.1 documentation" href="index.html" />
+    <link rel="next" title="4. Using the Browse-R" href="basic_view.html" />
+    <link rel="prev" title="Welcome to Shiny Genome Browse-R’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="basic_view.html" title="4. Using the Browse-R"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Shiny Genome Browse-R’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Shiny Genome Browse-R 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="toctree-wrapper compound" id="install">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="install-the-browse-r">
+<h1>1. Install the Browse-R<a class="headerlink" href="#install-the-browse-r" title="Permalink to this headline">¶</a></h1>
+<p>This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
+You will need access to a machine running a web server viewable to your users.</p>
+<ol class="arabic">
+<li><p class="first">Install R (&gt;=3.0.1)</p>
+</li>
+<li><dl class="first docutils">
+<dt>Install the following R packages. Some are from the general CRAN repository, while others are from Bioconductor.</dt>
+<dd><ol class="first last arabic simple">
+<li>shiny (CRAN); (&gt;= 0.9.1)</li>
+<li>RColorBrewer (CRAN)</li>
+<li>Biobase (BioC; &gt;=2.22.0)</li>
+<li>Gviz (BioC; &gt;=1.6.1)</li>
+<li>GenomicRanges (BioC; &gt;=1.14)</li>
+<li>Rsamtools (BioC; &gt;=1.14)</li>
+<li>(optional) any BioC annotation packages you may need. e.g. For gene annotation you may need TxDb.Mmusculus.UCSC.mm9.knownGene</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Get a copy of the Shiny BrowseR code from git: git clone ...</p>
+</li>
+<li><p class="first">Move it to your shiny web directory. On most machines this is /var/shiny-server/www</p>
+</li>
+</ol>
+</div>
+<div class="section" id="add-data-sources">
+<h1>2. Add data sources<a class="headerlink" href="#add-data-sources" title="Permalink to this headline">¶</a></h1>
+<p>To add a new dataset to the browser, you need to setup the following:</p>
+<ol class="arabic simple">
+<li><em>dataset config file</em>: A dataset-specific config file containing all basic informatino about the dataset</li>
+<li><em>phenotype matrix</em>: A tab-delimited text file containing a table of sample-wise metadata and location of sample-wise data file. See section X.XX for details.</li>
+<li><em>data</em>: The data itself - e.g. sample-wise epigenetic measures. Currently this data is expected to be in bigwig format; future releases of the browser are expected to support other file formats.</li>
+<li><em>group order</em>: A file indicating the order in which elements of a group are assigned colours in the browser. For example, a timeseries experiment may find it useful to cause the first timepoint to be plotted as first in the series, the second timepoint as second in a series. etc., rather than rely on alphanumeric ordering of the filenames. This is the file where the relative ordering of category members is specified.</li>
+</ol>
+<p><strong>Note: The browser expects all dataset config files to be located in a single directory.</strong>
+The location of this directory is specified in &#8220;config_location.txt&#8221;, which is located in the directory from which the app is run: e.g. <em>/var/shiny-server/www/Shiny_BrowseR</em></p>
+<div class="section" id="example-directory-structure-for-datasets">
+<h2>2.1. Example directory structure for datasets<a class="headerlink" href="#example-directory-structure-for-datasets" title="Permalink to this headline">¶</a></h2>
+<p id="add-data-exampledir"><em>TODO Mention no constraint to have data in this structure, as links are provided for data files in phenotype matrix and config files can be symlinked.</em>
+In this example we have two datasets, one showing epigenetic dynamics in mouse brain development and the other, for human. Here, <tt class="code docutils literal"><span class="pre">config_location.txt</span></tt> points to a directory which also contains all browser-related metadata and the data files themselves:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;config_location_points_here&gt;
+         |
+         |---- mouseBrainDev_config.txt *symlink*
+         |---- humanBrainDNAMethylome_config.txt *symlink*
+         |---- mouseBrainDev/
+                        |---- config.txt
+                        |---- pheno.txt
+                        |---- group_order.txt
+                        |---- data
+                                  |---- GSM123456_mm9.bw
+                                  |---- GSM654321_mm9.bw
+                                  | ...
+                                  |---- GSM9999_mm9.bw
+         |---- humanBrainDNAMethylome/
+                        |---- config.txt
+                        |---- pheno.txt
+                        |---- group_order.txt
+                        |---- data
+                                  |----
+                                  |---- PCW4.bw
+                                  |---- midGestation_Cortex.bw
+                                  | ...
+                                  |---- PostPuberty_AnteriorCingulateCortex.bw
+     |----anno
+</pre></div>
+</div>
+<p><em>TODO: Turn above into a graphic?</em></p>
+</div>
+<div class="section" id="dataset-config-file">
+<h2>2.2. Dataset config file<a class="headerlink" href="#dataset-config-file" title="Permalink to this headline">¶</a></h2>
+<p id="add-data-config">This file contains metadata about the dataset in general. It is a tab-delimited file with two columns: a key (controlled word) and value.
+Currently, all these fields are required:
+* <tt class="docutils literal"><span class="pre">name</span></tt>: dataset name
+* <tt class="docutils literal"><span class="pre">name_color</span></tt>
+* ...
+* <tt class="docutils literal"><span class="pre">datatype</span></tt>: Values should be one of: <tt class="docutils literal"><span class="pre">[bigwig</span> <span class="pre">|</span> <span class="pre">BSseq]</span></tt>. Indicates how data should be processed; most single continuous traces (e.g. coverage, tiling microarrays) can use the &#8216;bigwig&#8217; setting.</p>
+<p><a class="reference internal" href="#install"><em>Back to top</em></a></p>
+</div>
+<div class="section" id="phenotype-matrix">
+<h2>2.3. Phenotype matrix<a class="headerlink" href="#phenotype-matrix" title="Permalink to this headline">¶</a></h2>
+<p id="add-data-pheno">This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
+The browser expects the following columns, named exactly in this way:</p>
+<ul class="simple">
+<li>sampleName <em>TODO or is it SampleID? Look it up!</em></li>
+<li>bigDataURL: Location of data file</li>
+<li>all grouping columns as described in the <a class="reference internal" href="#add-data-grouping"><em>grouping order</em></a> file.</li>
+</ul>
+</div>
+<div class="section" id="groups-and-grouping-order">
+<h2>2.4. Groups and grouping order<a class="headerlink" href="#groups-and-grouping-order" title="Permalink to this headline">¶</a></h2>
+<p id="add-data-grouping">The <tt class="code docutils literal"><span class="pre">group_order.txt</span></tt> file is a tab-delimited file containing a table of two columns:
+#. groupID: Group name, must match a column name in the phenotype matrix
+#. groupOrder: Order in which group members must be shown. Comma-separated collection of values. <a href="#id1"><span class="problematic" id="id2">**</span></a>All values for a given group must be specified here. The browser will return an error if any additional group members are found in the phenotype table but are not listed here.</p>
+<p>In addition to these groups, the browser allows a non-grouping option - i.e. viewing sample-specific data - with &#8220;Grouping: (none)&#8221;.</p>
+<p>As an example:</p>
+<div class="highlight-python"><div class="highlight"><pre>groupID groupOrder
+Tissue  Brain,Sperm
+Diagnosis       Control,Schizophrenia,Bipolar disorder
+TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
+</pre></div>
+</div>
+<p>For this dataset, the browser would show 4 grouping options: Tissue, Diagnosis, TimeOfSampling, (none).</p>
+<blockquote>
+<div><a class="reference internal" href="#install"><em>Back to top</em></a></div></blockquote>
+</div>
+</div>
+<div class="section" id="add-annotation-sources">
+<h1>3. Add annotation sources<a class="headerlink" href="#add-annotation-sources" title="Permalink to this headline">¶</a></h1>
+<p>This is the directory structure for annotation sources:</p>
+<div class="highlight-python"><div class="highlight"><pre>|------ hg19
+                |------ cpgIslandExt.txt
+                |------ cytoBandIdeo.txt
+                |------ TxDb.Hsapiens.UCSC.hg19.refGene.sqlite
+|------ mm9
+                |------ cpgIslandExt.txt
+                |------ LAD_NPC_mm9.txt
+</pre></div>
+</div>
+<p>This is normal text again.</p>
+<p><a class="reference internal" href="#install"><em>Back to top</em></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Install the Browse-R</a></li>
+<li><a class="reference internal" href="#add-data-sources">2. Add data sources</a><ul>
+<li><a class="reference internal" href="#example-directory-structure-for-datasets">2.1. Example directory structure for datasets</a></li>
+<li><a class="reference internal" href="#dataset-config-file">2.2. Dataset config file</a></li>
+<li><a class="reference internal" href="#phenotype-matrix">2.3. Phenotype matrix</a></li>
+<li><a class="reference internal" href="#groups-and-grouping-order">2.4. Groups and grouping order</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#add-annotation-sources">3. Add annotation sources</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Shiny Genome Browse-R&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="basic_view.html"
+                        title="next chapter">4. Using the Browse-R</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="basic_view.html" title="4. Using the Browse-R"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Shiny Genome Browse-R’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Shiny Genome Browse-R 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Shraddha Pai, Kelly Sunderland.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
