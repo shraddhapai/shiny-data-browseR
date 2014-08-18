@@ -1,6 +1,7 @@
-suppressMessages(require(Gviz))
 suppressMessages(require(shiny))
 suppressMessages(require(shinyBS))
+suppressMessages(require(Gviz))
+suppressMessages(require(Rsamtools))
 suppressMessages(require(RColorBrewer))
 suppressMessages(require(GenomicFeatures))
 
@@ -11,7 +12,7 @@ tooltipStr <- '<script type="text/javascript" src="js/opentip-jquery.min.js"></s
 # UI CONTROL OBJECTS . SEE BELOW for UI layout 
 # Defaults
 #default.range <- c(93305559,93359905)
-default.range <- c(50e6,93e6)
+default.range <- c(0,5e5) + 20e6
 
 # well - dist start panel
 well_distStartPanel <- wellPanel(

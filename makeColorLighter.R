@@ -36,7 +36,7 @@ makeColorLighter <- function(rgb_col) {
   y <- rgb2hsv(x[1],x[2],x[3],max=255)
   #cat("HSV : Before")
   #print(y)
-  y[3] <-  1 # min(1,y[3] + 0.4);  
+  y[3] <-  min(1,y[3] + 0.4);  
   y[2] <- y[2]/3 # increase brightness, lower saturation
   #cat("HSV: After")
   #print(y)
