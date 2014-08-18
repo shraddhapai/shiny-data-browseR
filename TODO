@@ -1,0 +1,18 @@
+31 July 2014 
+* group_order: what happens when group order is not specified for a group? It should just use alphanum order.
+* Remove functions specific to datatype handler whenever a new dataset is loaded.
+* error bars not working for grouping type = "age group" 
+* plot title needs to be formatted more nicely.
+* Bug: error bar polygon doesn't render correctly. e.g. mTAG dataset when view spans centromere.
+* Bug: mTAG, zoom in doesn't change the numerical.
+
+Nice feature:
+* save plot to pdf with all parameters stated.
+* Make starting chrom/pos custom to config file.
+* Allow mc.cores to be a global parameter.
+	* config file: remove name_color
+	* config file: add platform name variable
+	* config file: add comments above each flag name.
+
+
+
