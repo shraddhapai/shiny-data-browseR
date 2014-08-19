@@ -60,8 +60,9 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-   if (input$getData == 0) return(NULL)
-  	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(NULL) 
+	blank <- HTML('<div style="font-size:20px">&nbsp;</div>');
+   if (input$getData == 0) return(blank)
+  	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
 	column(9,
 	HTML(paste(

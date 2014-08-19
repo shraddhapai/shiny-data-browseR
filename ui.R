@@ -17,7 +17,7 @@ default.range <- c(0,5e5) + 20e6
 # well - dist start panel
 well_distStartPanel <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  	HTML('<div class="cutefont", style="font-color:red">Genome Location</div><i>Manual button refresh required</i><p>'),
+  	HTML('<div class="cutefont">Genome Location</div><span style="font-style:italic" class="text-info">Manual button refresh required</span><p>'),
     fluidRow(
         column(4,uiOutput("mychrom")),
         column(4,numericInput("myrange1", "x-range, from:", default.range[1])),
@@ -37,7 +37,7 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
 # well panel: choose data view type - individual, groups etc.,
 well_chooseGroups <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  HTML('<div class="cutefont">Data and Grouping</div><div style="color:red"><i>Manual button refresh recommended</i></div><p>'),
+  HTML('<div class="cutefont">Data and Grouping</div><span class="text-info" style="font-style:italic">Manual button refresh recommended</span><p>'),
   fluidRow(column(6, uiOutput("o_groupBy"))),
    fluidRow(column(6,selectInput("whichMetric", "Baseline trends:",
 			c("Sample-wise data (no baselining)"="normal", 
@@ -57,7 +57,7 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
 
 well_yaxis <- wellPanel(   
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  HTML('<div class="cutefont">Plot Options</div><div style="color:red"><i>Automatic refresh</i></div><p>'),
+  HTML('<div class="cutefont">Plot Options</div><span style="font-style:italic" class="text-info">Automatic refresh</span><p>'),
     fluidRow(
 		column(6,selectInput("plotType","Plot type", c("Mean+CI"="a_confint", "Points+Lines"="b", "Points"="p","Lines"="l","Smooth"="smooth"),"l"))	
 	), 
@@ -90,16 +90,20 @@ suppressWarnings(shinyUI(fluidPage(
   # fixed header bar
   HTML('<div class="header header-fixed pagebar-col">'),
   fluidRow(
-  	column(4, HTML('<img src="images/title.png", width=400>')),
-	column(5,HTML('<img src="images/title_version.png",style="float:left;width=25%">')),
+  	column(9, HTML('<img src="images/title.png", width=400>')),
 	column(3,
   		conditionalPanel("input.getData>0",
   		shiny::tags$button(id="loadPlot", type="button",
 		class="btn action-button btn-success btn-xlg", HTML("   Update Plot   "))
 	))),
-	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),HTML('</div>'),HTML('</div>'),
+	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),HTML('</div>'),
+	fluidRow(column(10,HTML("")),column(2,HTML('<img src="images/title_version.png",style="float:right;width=25%">'))),
+  HTML('</div>'),
 
   HTML_ButtonClickText,
+
+HTML('<div>&nbsp;</div><h5 class="text-info"> The view is made of 4 panels, which can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel.</h5><div>&nbsp;</div>'),
+
 
   # begin collapsible panels
 	bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
@@ -137,6 +141,7 @@ suppressWarnings(shinyUI(fluidPage(
 		bsCollapsePanel("Sample selector",
   		 	conditionalPanel("input.getData>0",
 		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select samples for inclusion in analysis by multi-selecting rows below. </h4>&nbsp;<br>'),
+  				HTML('<span class="text-info" style="font-style:italic">Manual button refresh required</span><p>&nbsp;</p>'),
 				uiOutput("o_sampleCount"), 
 				selDataTableOutput("o_sampleTable")
 			),
@@ -144,8 +149,8 @@ suppressWarnings(shinyUI(fluidPage(
 		),
 		bsCollapsePanel("Genome Annotation",
 			conditionalPanel("input.getData>0",
-			HTML('<h4 class="text-primary" style="margin-bottom:0px;">Include genomic annotation as &quot;tracks&quot; below the main data</h4>&nbsp;<br>'),
-  				HTML('<span style="color:red"><i>Manual button refresh required</i></span>'),
+			HTML('<h4 class="text-primary" style="margin-bottom:0px;">Include genomic annotation as &quot;tracks&quot; below the main data.</h4><span style="color:#ff0000;font-style:italic">Note: Tracks showing gene models can add >1min to refresh time, depending on view range.<br>It is recommended that these be turned on at the end after plot settings have been finalized.</span>&nbsp;<br>&nbsp;<br>'),
+  				HTML('<span class="text-info" style="font-style:italic">Manual button refresh required</span>'),
    				wellPanel(uiOutput("o_getAnnot"))
 		),
 		id="col_genomeAnnot", value="genomeAnnot"

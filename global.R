@@ -38,7 +38,7 @@ body {
 	top:0px
 }
 .header {
-	height:100px;
+	height:120px;
 	border:1px solid #CCC;
 	width:1280px;
 	margin: 0px auto;
