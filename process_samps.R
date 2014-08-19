@@ -65,6 +65,7 @@ for (k in setdiff(configParams$groupCols, names(groupKey))) { # for groups witho
 
 fetchData <- function# Extracts data for selected range from all BW files, returns as a data.frame
 (
+session, 
 myfiles,	##<<(data.frame) sample phenotype df
 selRange,	##<<(GRanges) genomic interval to extract
 numBins,	##<<(integer) num. bins
@@ -88,7 +89,7 @@ datatypeParams ##<<(list) params specific to this datatype
 
 		source(parserFile);
 		tryCatch({
-			out <- fetchData_base(pheno=myfiles, selRange=selRange, bin_GR=bin_GR, 
+			out <- fetchData_base(session=session, pheno=myfiles, selRange=selRange, bin_GR=bin_GR, 
                             numBins=numBins, aggFUN=mean, myParams=datatypeParams)
 		},error=function() {
 			cat(sprintf("Error in fetchData() function for datatype: %s", datatype))
@@ -154,8 +155,6 @@ whichMetric, 	##<<(character) which metric to compute for sample-wise data;  opt
 whichBaseline,	##<<(character) group for baseline (for logratio_baseline option)
 logMe			##<<(logical) log-transform?
 ) {
-
-
 if (whichMetric=="ratio_baseline") 
 	mybase <- grp.summ[,sprintf("%s.mean",whichBaseline)]
 else 

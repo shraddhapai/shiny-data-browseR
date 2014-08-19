@@ -3,6 +3,7 @@
 
 fetchData_base <- function
 ( 
+session,
 pheno, 		##<<(data.frame) phenotype matrix
 selRange, ##<<(GRanges) range being viewed on browser
 bin_GR,  ##<<(GRanges) ranges of individual data bins
@@ -19,6 +20,9 @@ myParams  ##<<(list) format-specific params. For bigwig this is empty and does n
 ) {
 
   verbose <- TRUE
+	# initialize progress bar
+	updateProgressBar(session, inputId="load_pBar", visible=TRUE,value=0,color="warning",striped=TRUE,animate=F)
+
   
 myVals <- list(CHROM_POS=1,START_POS=2,END_POS=2,STRAND_POS=3,M_POS=4, COV_POS=5,minCov=4)
 for (nm in names(myParams)) {
@@ -26,6 +30,7 @@ for (nm in names(myParams)) {
 }
 
 tabixFiles <- pheno$bigDataURL
+tLen <- length(tabixFiles)
 out_score <- matrix(nrow=length(bin_GR), ncol=length(tabixFiles))
 
 ctr <- 1
@@ -65,11 +70,18 @@ for(t in tabixFiles) {
 		#out_score[,ctr:(ctr+(outcol-1))] <- matrix(unlist(sc),byrow=T,ncol=outcol); 
     out_score[,ctr] <- unlist(sc)
     ctr <- ctr+1
+
+	updateProgressBar(session, inputId="load_pBar", value=round((ctr/tLen)*100),color="warning",
+							striped=TRUE,animate=FALSE)
+	
     #ctr <- ctr+outcol
 	}, error=function(ex) {
 		print(ex); browser()
 	})
 	} 
+	updateProgressBar(session, inputId="load_pBar", value=100,color="success",
+							striped=FALSE,animate=FALSE)
+	
 
 colnames(out_score) <- pheno$sampleName
 return(out_score)

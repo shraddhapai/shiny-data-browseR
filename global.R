@@ -5,8 +5,6 @@
 selDataTableOutput <- function (outputId) 
 {
   x <- tagList(singleton(shiny::tags$head(
-	shiny::tags$link(rel = "stylesheet", 
-		type="text/css", href='http://fonts.googleapis.com/css?family=Homemade+Apple'),
   	shiny::tags$link(rel = "stylesheet", 
     	type = "text/css", href = "shared/datatables/css/DT_bootstrap.css"),
     shiny::tags$style(type="text/css", ".rowsSelected td{
@@ -159,11 +157,7 @@ fieldset[disabled] .btn-success.active {
   background-color: #75caeb;
   border-color: #5fc1e8;
 }
-
-
-
 	")),
-
     shiny::tags$script(src = "shared/datatables/js/jquery.dataTables.min.js"), 
     shiny::tags$script(src = "shared/datatables/js/DT_bootstrap.js"),
     shiny::tags$script(src = "js/DTbinding.js"))),

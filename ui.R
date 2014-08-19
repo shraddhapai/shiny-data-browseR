@@ -17,13 +17,12 @@ default.range <- c(0,5e5) + 20e6
 # well - dist start panel
 well_distStartPanel <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  	HTML('<div class="cutefont">Genome Location</div><i>Manual button refresh required</i><p>'),
+  	HTML('<div class="cutefont", style="font-color:red">Genome Location</div><i>Manual button refresh required</i><p>'),
     fluidRow(
         column(4,uiOutput("mychrom")),
         column(4,numericInput("myrange1", "x-range, from:", default.range[1])),
         column(4, numericInput("myrange2", "x-range, to:", default.range[2]))
 	),
-	bsTooltip("myrange1", "Select range of x-axis view"),
     uiOutput("csize"),
     uiOutput("coordSize"),
 	HTML('<p>&nbsp;</p><div class="cutefont"><b>Binning and Smoothing</b></div>'),
@@ -31,8 +30,6 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
 		column(4,numericInput("nbin1", "Number of Bins:", 1000)),
 		column(4,uiOutput("bw2"))
 	),
-	bsTooltip("nbin1", "Select number of bins to group x-axis data in. Width of a bin shown below","right"),
-	bsTooltip("param2","Select bandwidth for smoothing data. Fraction of window covered by bandwidth shown below.","right"),
 	uiOutput("bwMess2")
 )
  cat("\tWell: genomic location, bins, smoothing\n")
@@ -42,8 +39,7 @@ well_chooseGroups <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
   HTML('<div class="cutefont">Data and Grouping</div><div style="color:red"><i>Manual button refresh recommended</i></div><p>'),
   fluidRow(column(6, uiOutput("o_groupBy"))),
-  bsTooltip("groupBy", "Select sample property to average by","top"),
-   fluidRow(column(6,selectInput("whichMetric", "Baselining option:", 
+   fluidRow(column(6,selectInput("whichMetric", "Baseline trends:",
 			c("Sample-wise data (no baselining)"="normal", 
 			"Sample/Mean-of-all"="ratio_all", 
 			"Sample/Mean-of-baseline"="ratio_baseline"),"normal")),
@@ -84,30 +80,33 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
    HTML_ButtonClickText <-   HTML(paste('<script type="text/javascript">',
        '$(document).ready(function() {',
           '$("#loadPlot").click(function() {',
-            sprintf('$("#scatplot").html(\"<h4>Computing plot.<br>Do not change settings till plot has refreshed.</h4><img src=\\"%s\\">\");', progressImage),
+            sprintf('$("#scatplot").html(\"<h4>Computing plot.<br>Do not change settings till refresh is complete.</h4><img src=\\"%s\\">\");', progressImage),
           '});',
        '});',
       '</script>',
 	  sep=""))
 
-            # :'$("#errorMessage1").text("");',
-suppressWarnings(shinyUI(fluidPage(#theme="bootstrap.css",
+suppressWarnings(shinyUI(fluidPage(
+  # fixed header bar
   HTML('<div class="header header-fixed pagebar-col">'),
   fluidRow(
-  	column(9, HTML('<div>&nbsp;</div><span style="font-family:\'Homemade Apple\',cursive; font-size:24px">&nbsp;Epigenome Data Browse-R</span><div>&nbsp;</div>')),
+  	column(4, HTML('<img src="images/title.png", width=400>')),
+	column(5,HTML('<img src="images/title_version.png",style="float:left;width=25%">')),
 	column(3,
   		conditionalPanel("input.getData>0",
   		shiny::tags$button(id="loadPlot", type="button",
 		class="btn action-button btn-success btn-xlg", HTML("   Update Plot   "))
 	))),
-  HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),HTML('</div>'),
-  HTML('</div>'),
+	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),HTML('</div>'),HTML('</div>'),
+
   HTML_ButtonClickText,
+
+  # begin collapsible panels
 	bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
 	   bsCollapsePanel(title="Activate dataset",
 		HTML('<div style="height:300px">'),
+  		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select a dataset for analysis and click the button to activate.</h4>&nbsp;<br>'),
   		fluidRow(
-  		column(3,HTML('<h4 class="text-primary" style="margin-bottom:0px;">Initial: Activate a dataset</h4>')),
 		column(7,uiOutput("pickData")),
 		column(2,
 			shiny::tags$button(id="getData",
@@ -116,36 +115,55 @@ suppressWarnings(shinyUI(fluidPage(#theme="bootstrap.css",
 		HTML("</div>"),
 		id="col_activate", value="activate"
 		),
-			bsCollapsePanel("Plot",
-				conditionalPanel("input.getData>0",
-								 plotOutput("scatplot",height="300px")
+		bsCollapsePanel("Plot",
+			conditionalPanel("input.getData>0",
+				 bsAlert(inputId="plot_statusMsg"),
+				 bsProgressBar("load_pBar", value=0,visible=FALSE, color="standard",striped=TRUE, animate=FALSE),
+				 uiOutput("plot_welcome"),
+				 plotOutput("scatplot",height="300px")
 				),
-			id="col_plot",value="outplot"
+		id="col_plot",value="outplot"
+		),
+		bsCollapsePanel("Settings",
+		  	conditionalPanel("input.getData>0",
+			HTML('<h4 class="text-primary" style="margin-bottom:0px;">Customize plot settings</h4>&nbsp;<br>'),
+			fluidRow(
+		  		column(4,well_distStartPanel),
+				column(4,well_chooseGroups),
+		 	   	column(4,well_yaxis)
+			)),
+		id="col_settings",value="settings"
+		), 
+		bsCollapsePanel("Sample selector",
+  		 	conditionalPanel("input.getData>0",
+		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select samples for inclusion in analysis by multi-selecting rows below. </h4>&nbsp;<br>'),
+				uiOutput("o_sampleCount"), 
+				selDataTableOutput("o_sampleTable")
 			),
-			bsCollapsePanel("Settings",
-			  	conditionalPanel("input.getData>0",
-				fluidRow(
-			  		column(4,well_distStartPanel),
-					column(4,well_chooseGroups),
-			 	   	column(4,well_yaxis)
-				)),
-			id="col_settings",value="settings"
-			), 
-			bsCollapsePanel("Sample selector",
-  		 		conditionalPanel("input.getData>0",
-				HTML('<div style="background-color:#cccccc"><b>Sample Selector</b>'),
-				uiOutput("o_sampleCount"), selDataTableOutput("o_sampleTable"),
-				HTML("</div>")),
-			id="col_sampleSel", value="sampleSel"
-			),
-			bsCollapsePanel("Genome Annotation",
-				conditionalPanel("input.getData>0",
+		id="col_sampleSel", value="sampleSel"
+		),
+		bsCollapsePanel("Genome Annotation",
+			conditionalPanel("input.getData>0",
+			HTML('<h4 class="text-primary" style="margin-bottom:0px;">Include genomic annotation as &quot;tracks&quot; below the main data</h4>&nbsp;<br>'),
   				HTML('<span style="color:red"><i>Manual button refresh required</i></span>'),
-   				wellPanel(fluidRow(uiOutput("o_getAnnot"))),
-				HTML("</div>")),
-			id="col_genomeAnnot", value="genomeAnnot"
-			)
+   				wellPanel(uiOutput("o_getAnnot"))
+		),
+		id="col_genomeAnnot", value="genomeAnnot"
+		)
 	), # end bsCollapse
-			bsTooltip("plotType", "Select a plotType","right"),
-			HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai. This software is distributed with the GPLv3 license. </div>')
+
+	####### Begin tooltips
+	bsTooltip("dataset", 'Select a dataset to analyze. Then click "Make active dataset".',"top"),
+	# Settings: Genomic Location
+	bsTooltip("mychrom","Select genomic coordinates. Only available sequences are shown.", "top"),
+	bsTooltip("nbin1","Binning the data - how many bins for viewable range?", "top"),
+	bsTooltip("bw2", "Bandwidth for Gaussian smooth. 50% of the data lies within a quarter of this value","right"),
+	# Settings: Data and grouping
+	bsTooltip("whichMetric","Divide sample/group trends by a baseline.", "right"),
+	# Settings: Plot Options
+	bsTooltip("plotType", "Plot trendlines using points, lines or with errorbars","right"),
+	bsTooltip("colorBy", "Color trendlines by categorical variable. Only works when 'Group samples by' is set to '(none)'","top"),
+	bsTooltip("oCol","Pick color palette for colouring trendlines. See colorbrewer2.org for descriptions","top"),
+	bsTooltip("whichYlim", "Select if y-axis should have default or custom limits","right"),
+	HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 and has been tested in Firefox 31.0. </div>')
 	)))

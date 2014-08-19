@@ -1,6 +1,8 @@
 ## Functions which produce Plots
 mkScat <- function
 (
+session, 
+statusId, 
 myfiles, # the config file
 outdat, # the main output from reactive function
 configParams, ##<<(list) key-value pairs from config.txt
@@ -10,8 +12,6 @@ colorBy,	##<<(character) variable to colour by. Must be a key in "groupKey" obje
 oCol, 		##<<(character) group colour scheme
 plotViewType, 	##<<(character) plot type for Data Track. See Gviz for options
 plotType, 	##<<(character) currently hard-coded to "smoo2"
-compEB, # T/F whether error bars should be computed
-errb, # T/F whether error bars should be shown (must first be computed)
 param2, # smoothing bandwidth
 whichYlim, # whether default or custom Y axis was chosen
 customYlim,
@@ -130,7 +130,7 @@ cat("setting display track\n")
 displayPars(dTrack)  <- list(
 	cex.title=1.5,background.title='cyan4', 
 	baseline=0, col.baseline='gray20',lty.baseline=3,legend=legd,cex.axis=1.5,lwd=2,
-	col.grid='gray50',lty.grid=3,cex=1,pch=20,
+	col.grid='gray50',lty.grid=3,cex=1,pch=20, cex.legend=1.3,
 	grid=TRUE,ylim=myYlim
 	)
 
@@ -138,6 +138,7 @@ eleft <- max(10,0.1 * diff(xlim))
 finalTracks <- list(itrack,gtrack,dTrack)
 
 sizes <- c(0.05,0.15,1.0)
+createAlert(session, inputId=statusId, alertId="alert_statusMsg", message="Fetching annotation", type="warning",dismiss=FALSE,append=FALSE)
 cat("* About to get anno\n")
 if (!is.null(selAnno)) {
 	cat("\t* Collecting annotation tracks\n")
@@ -148,6 +149,7 @@ if (!is.null(selAnno)) {
 
 if (xlim[2]-xlim[1] > 3e5) gsize <- 0.05 else gsize <- 0.1
 ttl <- sprintf("%s: %s, %1.1f-%1.1f Mb ; Groups: {%s}", plotTxt,setchrom, xlim[1]/1e6, xlim[2]/1e6, paste(mygroups,sep=",",collapse=","))
+createAlert(session, inputId=statusId, alertId="alert_statusMsg", message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
 t0 <- system.time(
 	plotTracks(finalTracks, sizes=sizes,
 		min.width=1, extend.left=eleft, lwd=2,
@@ -163,6 +165,7 @@ if (verbose) {cat("Plotting time:\n"); print(t0) }
 }, finally={
 })
 cat("--------\n")
+closeAlert(session,alertId="alert_statusMsg")
 }
 
 

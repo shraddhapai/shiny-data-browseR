@@ -34,6 +34,8 @@ function(input, output, session){
 	# tier 1 : happens when 'make active dataset' button is clicked.
     refreshConfig <- reactive({
    		if (input$getData == 0) return(NULL) # only depends on first button
+		createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message="Accept default settings, or change settings below. Then click 'Update Plot'", type="info",
+					dismiss=FALSE,append=FALSE)
 		updateCollapse(session, id="main_collapse", open="col_settings", close="col_activate")
 		if (verbose) cat("* Refreshing config")
 		settings <- configSet[[input$dataset]]
@@ -52,6 +54,9 @@ function(input, output, session){
 	selectInput("groupBy", "Group samples by:", c(groupNames,"(none)"),
 		selected=settings$configParams$defaultGroup)
 })
+  #if (input$getData > 0) {
+#	addTooltip(session, id="groupBy","Generate mean trendlines by categorical variable. (none) for see individual samples as-is","right")
+ # }
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
@@ -110,8 +115,6 @@ function(input, output, session){
   })
   
   #### choosing data:
-  output$colPal <- renderUI({selectInput("oCol", "Group Colour Scheme:", rownames(brewer.pal.info),"Dark2")})  
-
   output$customYlim <- renderUI({
 	myout <- refreshData(); 
 	if (is.null(myout))  return(NULL) 
@@ -213,31 +216,32 @@ function(input, output, session){
 
        cat("* Read files, bin data, create matrix\n") 
 	   selRange <- GRanges(input$chrom, IRanges(input$myrange1,input$myrange2))
-	   print(system.time(dat <- fetchData(myfiles, selRange,numBins=input$nbin1,
+	    
+	   createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message="Fetching data", type="warning",dismiss=FALSE,append=FALSE)
+	   print(system.time(dat <- fetchData(session, myfiles=myfiles, selRange=selRange,numBins=input$nbin1,
                                         datatype=settings$configParams$datatype,
                                         datatypeParams=settings$datatypeParams,
                                         verbose=verbose)))
+	   updateProgressBar(session, "load_pBar", visible=FALSE)
 	   bed <- dat$coords; alldat <- dat$values; rm(dat)
 
 		baselineTxt <- ""
-		cat("* Compute group statistics\n")
-#		if (input$groupBy != "(none)") {
-#        	mygroups <- settings$groupKey[[input$groupBy]]
-#			mygroups <- intersect(mygroups, myfiles[,input$groupBy])
-#			grp.summ <- computeAverages(myfiles,mygroups,bed,alldat,F,input$groupBy)
-#				cat("\taverage computed\n")
-#		
-#			if (input$whichMetric != "normal") {
-#				tmp <- baselineSamps(alldat, grp.summ, mygroups, 
-#						input$whichMetric,input$whichBaseline, input$logMe)
-#				alldat <- tmp$alldat; grp.summ <- tmp$grp.summ
-#				logTxt <- "unlogged"; if (input$logMe) logTxt <- "log2"
-#				baselineTxt <- sprintf("%s:%s (%s)", input$whichMetric, input$whichBaseline, logTxt)
-#			}
-#	        outdat <- cbind(bed, alldat, grp.summ); #rm(bed,alldat, grp.summ);
-#		} else {
+		if (input$groupBy != "(none)") {
+			if (input$whichMetric != "normal") {
+	   			createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg",message="Baselining samples", type="warning",dismiss=FALSE,append=FALSE)
+        		mygroups <- settings$groupKey[[input$groupBy]]
+				mygroups <- intersect(mygroups, myfiles[,input$groupBy])
+				
+				grp.summ <- computeAverages(myfiles,mygroups,bed,alldat,F,input$groupBy)
+				cat("\taverage computed\n")
+				tmp <- baselineSamps(alldat, grp.summ, mygroups, 
+						input$whichMetric,input$whichBaseline, input$logMe)
+				alldat <- tmp$alldat; 
+				logTxt <- "unlogged"; if (input$logMe) logTxt <- "log2"
+				baselineTxt <- sprintf("%s:%s (%s)", input$whichMetric, input$whichBaseline, logTxt)
+			}
+		}
 		outdat <- cbind(bed,alldat)
-#		}
 
         myOut <- list(myfiles=myfiles, outdat=outdat,plotTxt=sprintf("%s: %s", settings$configParams$name, baselineTxt))
 		### 1) myfiles: phenotype table
@@ -250,7 +254,7 @@ function(input, output, session){
   })
 
   output$scatplot <- renderPlot({ 
-		  while (sink.number() > 0) sink(NULL)
+		  while (sink.number() >=1) { sink(NULL)}
 cat("In renderPlot\n")
   if (is.null(values$lastAction)) return(NULL)
   if (values$lastAction=="data") return(NULL)
@@ -280,15 +284,17 @@ cat("In renderPlot\n")
 		}
 
 		isolate({Smoother2 <- input$param2})
+		isolate({selAnno <- input$anno})
+		closeAlert(session,alertId="alert_statusMsg")
         
-          mkScat(myfiles=myfiles, outdat = outdat,configParams=settings$configParams,
+          mkScat(session, statusId="plot_statusMsg", myfiles=myfiles, outdat = outdat,configParams=settings$configParams,
                  groupKey=groupKey, groupBy=input$groupBy, 
 				 colorBy=input$colorBy, oCol=input$oCol, 				# color
 				 plotViewType=input$plotType, plotType="smoo2", 		# plot type
-				 compEB=computeEB, errb=F, param2=Smoother2, 			# errorbar related
+				 param2=Smoother2, 			# errorbar related
                  whichYlim=input$whichYlim, customYlim=input$customYlim,	# ylim
 				 legd=input$legd,											# legend 
-				 plotTxt=myOut$plotTxt,selAnno=input$anno,
+				 plotTxt=myOut$plotTxt,selAnno=selAnno,
 				 verbose=TRUE
           )
         }
