@@ -103,9 +103,8 @@ suppressWarnings(shinyUI(fluidPage(
 
   HTML_ButtonClickText,
   HTML('<div style="height:30px"></div>'),
-  bsAlert(inputId="intro_msg"),
-  uiOutput("welcome_msg"),
-
+  #bsAlert(inputId="intro_msg"),
+  #uiOutput("welcome_msg"),
 
   # begin collapsible panels
 	bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",

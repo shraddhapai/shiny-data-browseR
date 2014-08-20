@@ -33,8 +33,18 @@ function(input, output, session){
 	output$pickData <- renderUI({selectInput("dataset", "", names(configSet), width="750px")	})
 	# tier 1 : happens when 'make active dataset' button is clicked.
     refreshConfig <- reactive({
+
+		plot_alertTxt <- paste(
+			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>Dataset activated.</div>",
+			"At this point, simply click the <span style='font-weight:800'>'Update Plot'</span> button on the top-right to load a default view in this panel.<p>&nbsp;<p>",
+			'Alternately,  you may want to first customize the plot by changing settings in the three panels below: { <span style="font-weight:800">Settings, Sample Selector, Genome Annotation</span> }.<br>',
+			"<span style='font-weight:800'>Modify and refresh the plot as many times as you need.</span> <br>",
+			"Some changes will require a button refresh, while others will update automatically! Settings will usually indicate which is the case.<p>.&nbsp; </p>",
+			"( By the way -- this panel collapses too. Feel free to get it out of the way while you're tinkering. )",
+			sep="")
+
    		if (input$getData == 0) return(NULL) # only depends on first button
-		createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message="Accept default settings, or change settings below. Then click 'Update Plot'", type="info",
+		createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message=plot_alertTxt, type="info",
 					dismiss=FALSE,append=FALSE)
 		updateCollapse(session, id="main_collapse", open="col_settings", close="col_activate")
 		if (verbose) cat("* Refreshing config")
@@ -46,9 +56,9 @@ function(input, output, session){
 		isolate({return(settings)})
    })
 
-  output$welcome_msg <- renderUI({
-		  createAlert(session,inputId="intro_msg", message="The view is made of 5 panels below. Each can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel. (Click the 'X' to dismiss this panel).",type="info",dismiss=TRUE)
-  })
+  #output$welcome_msg <- renderUI({
+#		  createAlert(session,inputId="intro_msg", message="The view is made of 5 panels below. Each can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel. (Click the 'X' to dismiss this panel).",type="info",dismiss=TRUE)
+ # })
 
   output$o_groupBy <- renderUI({ 
   if (input$getData == 0) return(NULL)
@@ -63,14 +73,14 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-	blank <- HTML('<div style="height:50px;font-style:italic;font-size:20px;color:#c0e4ff;text-align:right"><br>(No dataset selected)</div>');
+	blank <- HTML('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px"><span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span><br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, "Activate dataset".</div>');
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
 		column(9,
-			HTML(paste('<span style="color:#ffffff;font-size:18px">Active dataset:',
+			HTML(paste('<div style="color:#ffffff;font-size:18px;margin-top:10px;margin-left:10px">Active dataset:',
 			sprintf('<span style="color:#ffd357; font-weight:600">%s</span>', settings$configParams[["name"]])),
-			sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></span>', 
+			sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></div>', 
 			settings$configParams[["genomeName"]]),
 			sep="")
 	), 	column(3,HTML(sprintf('<em style="margin-top:10px;color:#ffd357">%i samples available</em>', 
@@ -81,7 +91,7 @@ function(input, output, session){
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
-		column(8,HTML(sprintf('<span style="#ffffff;font-weight:800">Description:  </span><span style="color:#c0e4ff;font-weight:400">%s</span>',settings$configParams[["description"]]))),
+		column(8,HTML(sprintf('<div style="margin-left:10px;margin-top:10px"><span style="#ffffff;font-weight:800">Description:  </span><span style="color:#c0e4ff;font-weight:400">%s</span></div>',settings$configParams[["description"]]))),
 		column(1,HTML("")),
 		column(2,HTML(sprintf('<span>Platform/assay: <span style="color:#c0e4ff">%s</span></span>', 
 		settings$configParams[['platformName']]))
