@@ -6,7 +6,6 @@ suppressMessages(require(RColorBrewer))
 suppressMessages(require(GenomicFeatures))
 
 progressImage <- "images/spinner.gif"
-tooltipStr <- '<script type="text/javascript" src="js/opentip-jquery.min.js"></script><link href="css/opentip.css" rel="stylesheet" type="text/css"><script type="text/javascript" src="js/library.js"></script>';
 
 #############################
 # UI CONTROL OBJECTS . SEE BELOW for UI layout 
@@ -96,7 +95,7 @@ suppressWarnings(shinyUI(fluidPage(
   		shiny::tags$button(id="loadPlot", type="button",
 		class="btn action-button btn-success btn-xlg", HTML("   Update Plot   "))
 	))),
-	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),HTML('</div>'),
+	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),uiOutput("data_desc"),HTML('</div>'),
 	fluidRow(column(10,HTML("")),column(2,HTML('<img src="images/title_version.png",style="float:right;width=25%">'))),
   HTML('</div>'),
 

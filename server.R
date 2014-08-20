@@ -64,14 +64,24 @@ function(input, output, session){
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
-	column(9,
-	HTML(paste(
-		'<span style="color:#ffffff;font-size:20px">Active dataset:',
-		sprintf('<span style="color:#ffd357; font-weight:600">%s</span>', settings$configParams[["name"]])),
-		sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></span>', settings$configParams[["genomeName"]]),
-		sep="")
-	), column(3,HTML(sprintf('<em style="margin-top:10px">%i samples available</em>', nrow(settings$allDat))))
-	)
+		column(9,
+			HTML(paste('<span style="color:#ffffff;font-size:20px">Active dataset:',
+			sprintf('<span style="color:#ffd357; font-weight:600">%s</span>', settings$configParams[["name"]])),
+			sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></span>', 
+			settings$configParams[["genomeName"]]),
+			sep="")
+	), 	column(3,HTML(sprintf('<em style="margin-top:10px">%i samples available</em>', 
+		nrow(settings$allDat))))
+	)})
+  output$data_desc <- renderUI({
+	blank <- HTML('<div style="font-size:20px">&nbsp;</div>');
+   if (input$getData == 0) return(blank)
+  	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
+	fluidRow(
+		column(9,HTML(sprintf('<span style="color:#ffd357;font-weight:200">%s</span>',settings$configParams[["description"]]))
+	),	column(3,HTML(sprintf('<span style="color:#ffd357">Platform/assay: %s</span>', 
+		settings$configParams[['platformName']]))
+	))
 	})
 
 	output$o_sampleCount <- renderUI({
