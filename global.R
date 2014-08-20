@@ -53,12 +53,14 @@ body {
   font-weight:800;
   border:3px solid transparent;
 }
-
-.cutefont {
-  font-size:120%;
-  font-weight:800;
-  color:#3572a1; // #020d44;
+.pagebar-col2 {
+  background-color: #2c5B80;
+  border-color: #727272;
+  color: #eeeeee;
+  font-weight:400;
+  border:3px solid transparent;
 }
+
 
 .btn {
   display: inline-block;

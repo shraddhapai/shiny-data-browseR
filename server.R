@@ -46,6 +46,9 @@ function(input, output, session){
 		isolate({return(settings)})
    })
 
+  output$welcome_msg <- renderUI({
+		  createAlert(session,inputId="intro_msg", message="The view is made of 5 panels below. Each can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel. (Click the 'X' to dismiss this panel).",type="info",dismiss=TRUE)
+  })
 
   output$o_groupBy <- renderUI({ 
   if (input$getData == 0) return(NULL)
@@ -60,26 +63,27 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-	blank <- HTML('<div style="font-size:20px">&nbsp;</div>');
+	blank <- HTML('<div style="height:50px;font-style:italic;font-size:20px;color:#c0e4ff;text-align:right"><br>(No dataset selected)</div>');
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
 		column(9,
-			HTML(paste('<span style="color:#ffffff;font-size:20px">Active dataset:',
+			HTML(paste('<span style="color:#ffffff;font-size:18px">Active dataset:',
 			sprintf('<span style="color:#ffd357; font-weight:600">%s</span>', settings$configParams[["name"]])),
 			sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></span>', 
 			settings$configParams[["genomeName"]]),
 			sep="")
-	), 	column(3,HTML(sprintf('<em style="margin-top:10px">%i samples available</em>', 
+	), 	column(3,HTML(sprintf('<em style="margin-top:10px;color:#ffd357">%i samples available</em>', 
 		nrow(settings$allDat))))
 	)})
   output$data_desc <- renderUI({
-	blank <- HTML('<div style="font-size:20px">&nbsp;</div>');
+	blank <- HTML('<div height:50px">&nbsp;</div>');
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
-		column(9,HTML(sprintf('<span style="color:#ffd357;font-weight:200">%s</span>',settings$configParams[["description"]]))
-	),	column(3,HTML(sprintf('<span style="color:#ffd357">Platform/assay: %s</span>', 
+		column(8,HTML(sprintf('<span style="#ffffff;font-weight:800">Description:  </span><span style="color:#c0e4ff;font-weight:400">%s</span>',settings$configParams[["description"]]))),
+		column(1,HTML("")),
+		column(2,HTML(sprintf('<span>Platform/assay: <span style="color:#c0e4ff">%s</span></span>', 
 		settings$configParams[['platformName']]))
 	))
 	})

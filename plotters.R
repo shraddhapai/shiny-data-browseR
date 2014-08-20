@@ -103,7 +103,7 @@ if(!groupBy %in% "(none)"){
 	
 	cat("going to get DataTrack\n")
 	dTrack <- DataTrack(plot_GR,groups=factor(myfiles[,groupBy],levels=g),
-		col=colist,fill=filldat, type=plotViewType,title="score")
+		col=colist,fill=filldat, type=plotViewType,name=configParams[["ylabel"]])
 	cat("Got dataTrack\n")
 	
 	# ######################################################
@@ -124,7 +124,7 @@ if(!groupBy %in% "(none)"){
 	mcols(plot_GR) <- outdat
 	dTrack <- DataTrack(plot_GR, legend=legd,groups=smpsGrps[,"sampleName"],
 		aggregateGroups=F,type=plotViewType,
-		col=colist)
+		col=colist,name=configParams[["ylabel"]])
 } 
 cat("setting display track\n")
 displayPars(dTrack)  <- list(

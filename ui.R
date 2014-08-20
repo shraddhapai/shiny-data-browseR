@@ -87,7 +87,9 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
 
 suppressWarnings(shinyUI(fluidPage(
   # fixed header bar
-  HTML('<div class="header header-fixed pagebar-col">'),
+  HTML('<div class="header header-fixed">'),
+  # main header showing title
+  HTML('<div class="pagebar-col">'),
   fluidRow(
   	column(9, HTML('<img src="images/title.png", width=400>')),
 	column(3,
@@ -95,13 +97,14 @@ suppressWarnings(shinyUI(fluidPage(
   		shiny::tags$button(id="loadPlot", type="button",
 		class="btn action-button btn-success btn-xlg", HTML("   Update Plot   "))
 	))),
-	HTML('<div class="cutefont,subtitle" style="font-size=200%">'),uiOutput("dataname"),uiOutput("data_desc"),HTML('</div>'),
-	fluidRow(column(10,HTML("")),column(2,HTML('<img src="images/title_version.png",style="float:right;width=25%">'))),
+  HTML('</div>'),
+	HTML('<div class="pagebar-col2">'),uiOutput("dataname"),uiOutput("data_desc"),HTML('</div>'),
   HTML('</div>'),
 
   HTML_ButtonClickText,
-
-HTML('<div>&nbsp;</div><h5 class="text-info"> The view is made of 4 panels, which can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel.</h5><div>&nbsp;</div>'),
+  HTML('<div style="height:30px"></div>'),
+  bsAlert(inputId="intro_msg"),
+  uiOutput("welcome_msg"),
 
 
   # begin collapsible panels
@@ -169,5 +172,5 @@ HTML('<div>&nbsp;</div><h5 class="text-info"> The view is made of 4 panels, whic
 	bsTooltip("colorBy", "Color trendlines by categorical variable. Only works when 'Group samples by' is set to '(none)'","top"),
 	bsTooltip("oCol","Pick color palette for colouring trendlines. See colorbrewer2.org for descriptions","top"),
 	bsTooltip("whichYlim", "Select if y-axis should have default or custom limits","right"),
-	HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 and has been tested in Firefox 31.0. </div>')
+	HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai, Centre for Addiction and Mental Health. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 or better, and has been tested in Firefox 31.0. </div>')
 	)))
