@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Install the Browse-R &mdash; Shiny Genome Browse-R 0.1 documentation</title>
+    <title>1. Install the Browse-R &mdash; Epigenome Data Browse-R 0.1 beta documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.1 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +24,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Shiny Genome Browse-R 0.1 documentation" href="index.html" />
+    <link rel="top" title="Epigenome Data Browse-R 0.1 beta documentation" href="index.html" />
     <link rel="next" title="4. Using the Browse-R" href="basic_view.html" />
-    <link rel="prev" title="Welcome to Shiny Genome Browse-R’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,9 +39,9 @@
           <a href="basic_view.html" title="4. Using the Browse-R"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to Shiny Genome Browse-R’s documentation!"
+          <a href="index.html" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Shiny Genome Browse-R 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Epigenome Data Browse-R 0.1 beta documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,22 +58,31 @@
 <h1>1. Install the Browse-R<a class="headerlink" href="#install-the-browse-r" title="Permalink to this headline">¶</a></h1>
 <p>This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
 You will need access to a machine running a web server viewable to your users.</p>
+<p>These instructions are for a machine running U</p>
 <ol class="arabic">
-<li><p class="first">Install R (&gt;=3.0.1)</p>
-</li>
 <li><dl class="first docutils">
-<dt>Install the following R packages. Some are from the general CRAN repository, while others are from Bioconductor.</dt>
-<dd><ol class="first last arabic simple">
-<li>shiny (CRAN); (&gt;= 0.9.1)</li>
-<li>RColorBrewer (CRAN)</li>
-<li>Biobase (BioC; &gt;=2.22.0)</li>
-<li>Gviz (BioC; &gt;=1.6.1)</li>
-<li>GenomicRanges (BioC; &gt;=1.14)</li>
-<li>Rsamtools (BioC; &gt;=1.14)</li>
-<li>(optional) any BioC annotation packages you may need. e.g. For gene annotation you may need TxDb.Mmusculus.UCSC.mm9.knownGene</li>
-</ol>
+<dt>Install R (&gt;=3.0.1)</dt>
+<dd><ul class="first last simple">
+<li>At command line, run <tt class="docutils literal"><span class="pre">apt-get</span> <span class="pre">r-base</span> <span class="pre">r-recommended</span></tt></li>
+<li>For a different system, see <cite>this R FAQ &lt;http://cran.r-project.org/doc/FAQ/R-FAQ.html#How-can-R-be-installed-_0028Unix_002dlike_0029&gt;</cite></li>
+</ul>
 </dd>
 </dl>
+</li>
+<li><p class="first">Install the following R packages. Some are from the general CRAN repository, while others are from Bioconductor.
+R packages can be easily installed within R with the command: <tt class="docutils literal"><span class="pre">install.packages(&lt;packageNameHere&gt;,</span> <span class="pre">dependencies=TRUE)</span></tt>.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>shiny (CRAN); (&gt;= 0.9.1)</li>
+<li>RColorBrewer (CRAN)</li>
+<li>doMC (CRAN) (&gt;=1.3)</li>
+<li>Biobase (BioC; &gt;=2.22.0)</li>
+<li>Gviz (BioC; &gt;=1.6.1)</li>
+<li>GenomicRanges (BioC; &gt;=1.14) &#8212;&gt; not needed; dependency of Gviz</li>
+<li>Rsamtools (BioC; &gt;=1.14) &#8212;&gt; not needed ; dependency of Gviz</li>
+<li>(optional) any BioC annotation packages you may need. e.g. For gene annotation you may need TxDb.Mmusculus.UCSC.mm9.knownGene</li>
+</ol>
+</div></blockquote>
 </li>
 <li><p class="first">Get a copy of the Shiny BrowseR code from git: git clone ...</p>
 </li>
@@ -199,15 +208,10 @@ TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to Shiny Genome Browse-R&#8217;s documentation!</a></p>
+                        title="previous chapter">Epigenome Data Browse-R: an interactive statistical browser for population genomics</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="basic_view.html"
                         title="next chapter">4. Using the Browse-R</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/install.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -235,13 +239,13 @@ TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
           <a href="basic_view.html" title="4. Using the Browse-R"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to Shiny Genome Browse-R’s documentation!"
+          <a href="index.html" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics"
              >previous</a> |</li>
-        <li><a href="index.html">Shiny Genome Browse-R 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Epigenome Data Browse-R 0.1 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, Shraddha Pai, Kelly Sunderland.
+        &copy; Copyright 2014, Shraddha Pai, Centre for Addiction and Mental Health.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>

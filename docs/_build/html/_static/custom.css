@@ -1,0 +1,13 @@
+
+body {
+	font-size:20px;
+	//line-height:180%;
+}
+.message {
+	font-weight:400;
+	background-color: #cccccc;
+}
+.redness {
+	color:red;
+	font-style:italic;
+}
