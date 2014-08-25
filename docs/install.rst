@@ -11,15 +11,20 @@ Install the Browse-R
 This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
 You will need access to a machine running a web server viewable to your users.
 
+These instructions are for a machine running U
 
 #. Install R (>=3.0.1)
+	* At command line, run ``apt-get r-base r-recommended``
+	* For a different system, see `this R FAQ <http://cran.r-project.org/doc/FAQ/R-FAQ.html#How-can-R-be-installed-_0028Unix_002dlike_0029>`
 #. Install the following R packages. Some are from the general CRAN repository, while others are from Bioconductor.
+   R packages can be easily installed within R with the command: ``install.packages(<packageNameHere>, dependencies=TRUE)``. 
 	#. shiny (CRAN); (>= 0.9.1)
 	#. RColorBrewer (CRAN)
+	#. doMC (CRAN) (>=1.3)
 	#. Biobase (BioC; >=2.22.0)
 	#. Gviz (BioC; >=1.6.1)
-	#. GenomicRanges (BioC; >=1.14)
-	#. Rsamtools (BioC; >=1.14)
+	#. GenomicRanges (BioC; >=1.14) ---> not needed; dependency of Gviz
+	#. Rsamtools (BioC; >=1.14) ---> not needed ; dependency of Gviz
 	#. (optional) any BioC annotation packages you may need. e.g. For gene annotation you may need TxDb.Mmusculus.UCSC.mm9.knownGene
 #.  Get a copy of the Shiny BrowseR code from git: git clone ...
 #. Move it to your shiny web directory. On most machines this is /var/shiny-server/www
