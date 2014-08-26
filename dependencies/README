@@ -1,0 +1,2 @@
+For now, the install of the data browser requires a custom version of the BioC package Gviz.
+Future releases will use an updated version of Gviz
