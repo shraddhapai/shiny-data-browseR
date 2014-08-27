@@ -91,7 +91,7 @@ suppressWarnings(shinyUI(fluidPage(
   # main header showing title
   HTML('<div class="pagebar-col">'),
   fluidRow(
-  	column(9, HTML('<img src="images/title.png", width=400>')),
+  	column(9, HTML('<a href="https://github.com/shraddhapai/shiny-data-browseR"><img src="images/title.png", width=400></a>')),
 	column(3,
   		conditionalPanel("input.getData>0",
   		shiny::tags$button(id="loadPlot", type="button",
@@ -103,7 +103,7 @@ suppressWarnings(shinyUI(fluidPage(
 
   HTML_ButtonClickText,
   HTML('<div style="height:30px"></div>'),
-  HTML('<h5 class="text-info"><i>Need to get back to baseline?</i> The browseR can be restarted by reloading this page on your browser.</h4>'),
+  HTML('<h5 class="text-info"><i>Need to get back to baseline?</i> The browseR can be restarted by refreshing this page on your browser.</h5>'),
 
   # begin collapsible panels
 	bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
@@ -170,5 +170,6 @@ suppressWarnings(shinyUI(fluidPage(
 	bsTooltip("colorBy", "Color trendlines by categorical variable. Only works when 'Group samples by' is set to '(none)'","top"),
 	bsTooltip("oCol","Pick color palette for colouring trendlines. See colorbrewer2.org for descriptions","top"),
 	bsTooltip("whichYlim", "Select if y-axis should have default or custom limits","right"),
+	HTML('<h4>For code, technical documentation, and user manual, visit <a href="https://github.com/shraddhapai/shiny-data-browseR">EDB @ github</a></h4>'),
 	HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai, Centre for Addiction and Mental Health. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 or better, and has been tested in Firefox 31.0. </div>')
 	)))
