@@ -11,7 +11,11 @@ Install the Browse-R
 This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
 You will need access to a machine running a web server viewable to your users.
 
-These instructions are for a machine running U
+These instructions are for a machine running Ubuntu 14.04 (LTS). I have also successfully set up the app on Debian Wheezy LTS.
+
+#. Get R 3.1.0
+
+
 
 #. Install R (>=3.0.1)
 	* At command line, run ``apt-get r-base r-recommended``

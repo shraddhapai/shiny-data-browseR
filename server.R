@@ -35,7 +35,7 @@ function(input, output, session){
     refreshConfig <- reactive({
 
 		plot_alertTxt <- paste(
-			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>Dataset activated.</div>",
+			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>Dataset selected.</div>",
 			"At this point, simply click the <span style='font-weight:800'>'Update Plot'</span> button on the top-right to load a default view in this panel.<p>&nbsp;<p>",
 			'Alternately,  you may want to first customize the plot by changing settings in the three panels below: { <span style="font-weight:800">Settings, Sample Selector, Genome Annotation</span> }.<br>',
 			"<span style='font-weight:800'>Modify and refresh the plot as many times as you need.</span> <br>",
@@ -73,7 +73,7 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-	blank <- HTML('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px"><span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span><br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, "Activate dataset".</div>');
+	blank <- HTML('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px"><span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span><br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, "Select dataset".</div>');
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
@@ -213,7 +213,6 @@ function(input, output, session){
 	refreshData  <- reactive({
     if(input$loadPlot == 0) return(NULL)
     return(isolate({ # everything in this function waits for actionButton() to be selected before executing
-		updateTabsetPanel(session, inputId="main_tabset", selected="Plot")
 		if (verbose) cat("* In refreshData()\n")
 		settings <- refreshConfig()
 		cat("got out got out\n")
@@ -284,6 +283,7 @@ cat("In renderPlot\n")
   if (is.null(values$lastAction)) return(NULL)
   if (values$lastAction=="data") return(NULL)
   if (input$loadPlot==0) return(NULL)
+updateCollapse(session, id = "main_collapse", multiple=TRUE,close=c("col_activate","col_genomeAnnot","col_sampleSel","col_settings"),open="col_plot")
 
     myOut <- isolate({refreshData()});if(is.null(myOut)) return(NULL)
 	cat("past refreshData\n")

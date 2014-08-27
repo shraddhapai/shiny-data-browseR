@@ -5,6 +5,8 @@
 * plot title needs to be formatted more nicely.
 * Bug: error bar polygon doesn't render correctly. e.g. mTAG dataset when view spans centromere.
 * Bug: mTAG, zoom in doesn't change the numerical.
+* Doc: Gviz install should be of custom Gviz package. 
+* Configuring shiny. shiny-server is (probably?) not required. For shiny < 0.9.0, runApp("myApp", port=XXXX) works. For shiny 0.9.0 runApp("myApp",port=XXXX, host="0.0.0.0") is required.
 
 Nice feature:
 * save plot to pdf with all parameters stated.

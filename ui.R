@@ -16,7 +16,7 @@ default.range <- c(0,5e5) + 20e6
 # well - dist start panel
 well_distStartPanel <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  	HTML('<div class="cutefont">Genome Location</div><span style="font-style:italic" class="text-info">Manual button refresh required</span><p>'),
+  	HTML('<div class="cutefont">Genome Location</div><span style="font-style:italic" class="text-info">Manual plot update required</span><p>'),
     fluidRow(
         column(4,uiOutput("mychrom")),
         column(4,numericInput("myrange1", "x-range, from:", default.range[1])),
@@ -36,7 +36,7 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
 # well panel: choose data view type - individual, groups etc.,
 well_chooseGroups <- wellPanel(
 style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
-  HTML('<div class="cutefont">Data and Grouping</div><span class="text-info" style="font-style:italic">Manual button refresh recommended</span><p>'),
+  HTML('<div class="cutefont">Data and Grouping</div><span class="text-info" style="font-style:italic">Manual plot update recommended</span><p>'),
   fluidRow(column(6, uiOutput("o_groupBy"))),
    fluidRow(column(6,selectInput("whichMetric", "Baseline trends:",
 			c("Sample-wise data (no baselining)"="normal", 
@@ -79,7 +79,7 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
    HTML_ButtonClickText <-   HTML(paste('<script type="text/javascript">',
        '$(document).ready(function() {',
           '$("#loadPlot").click(function() {',
-            sprintf('$("#scatplot").html(\"<h4>Computing plot.<br>Do not change settings till refresh is complete.</h4><img src=\\"%s\\">\");', progressImage),
+            sprintf('$("#scatplot").html(\"<h4>Computing plot.<br>Do not change settings until refresh is complete.</h4><img src=\\"%s\\">\");', progressImage),
           '});',
        '});',
       '</script>',
@@ -103,13 +103,12 @@ suppressWarnings(shinyUI(fluidPage(
 
   HTML_ButtonClickText,
   HTML('<div style="height:30px"></div>'),
-  #bsAlert(inputId="intro_msg"),
-  #uiOutput("welcome_msg"),
+  HTML('<h5 class="text-info"><i>Need to get back to baseline?</i> The browseR can be restarted by reloading this page on your browser.</h4>'),
 
   # begin collapsible panels
 	bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
-	   bsCollapsePanel(title="Activate dataset",
-		HTML('<div style="height:300px">'),
+	   bsCollapsePanel(title="Choose dataset",
+		HTML('<div style="height:200px">'),
   		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select a dataset for analysis and click the button to activate.</h4>&nbsp;<br>'),
   		fluidRow(
 		column(7,uiOutput("pickData")),
@@ -142,7 +141,7 @@ suppressWarnings(shinyUI(fluidPage(
 		bsCollapsePanel("Sample selector",
   		 	conditionalPanel("input.getData>0",
 		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select samples for inclusion in analysis by multi-selecting rows below. </h4>&nbsp;<br>'),
-  				HTML('<span class="text-info" style="font-style:italic">Manual button refresh required</span><p>&nbsp;</p>'),
+  				HTML('<span class="text-info" style="font-style:italic">Manual plot update required</span><p>&nbsp;</p>'),
 				uiOutput("o_sampleCount"), 
 				selDataTableOutput("o_sampleTable")
 			),
@@ -151,7 +150,7 @@ suppressWarnings(shinyUI(fluidPage(
 		bsCollapsePanel("Genome Annotation",
 			conditionalPanel("input.getData>0",
 			HTML('<h4 class="text-primary" style="margin-bottom:0px;">Include genomic annotation as &quot;tracks&quot; below the main data.</h4><span style="color:#ff0000;font-style:italic">Note: Tracks showing gene models can add >1min to refresh time, depending on view range.<br>It is recommended that these be turned on at the end after plot settings have been finalized.</span>&nbsp;<br>&nbsp;<br>'),
-  				HTML('<span class="text-info" style="font-style:italic">Manual button refresh required</span>'),
+  				HTML('<span class="text-info" style="font-style:italic">Manual plot update required</span>'),
    				wellPanel(uiOutput("o_getAnnot"))
 		),
 		id="col_genomeAnnot", value="genomeAnnot"
