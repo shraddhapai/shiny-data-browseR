@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Install the Browse-R &mdash; Epigenome Data Browse-R 0.1 beta documentation</title>
+    <title>1. Install instructions &mdash; Epigenome Data Browse-R 0.1 beta documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -54,41 +54,64 @@
 <ul class="simple">
 </ul>
 </div>
-<div class="section" id="install-the-browse-r">
-<h1>1. Install the Browse-R<a class="headerlink" href="#install-the-browse-r" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-instructions">
+<h1>1. Install instructions<a class="headerlink" href="#install-instructions" title="Permalink to this headline">¶</a></h1>
 <p>This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
 You will need access to a machine running a web server viewable to your users.</p>
-<p>These instructions are for a machine running U</p>
-<ol class="arabic">
-<li><dl class="first docutils">
-<dt>Install R (&gt;=3.0.1)</dt>
-<dd><ul class="first last simple">
-<li>At command line, run <tt class="docutils literal"><span class="pre">apt-get</span> <span class="pre">r-base</span> <span class="pre">r-recommended</span></tt></li>
-<li>For a different system, see <cite>this R FAQ &lt;http://cran.r-project.org/doc/FAQ/R-FAQ.html#How-can-R-be-installed-_0028Unix_002dlike_0029&gt;</cite></li>
+<p>All EDB development has been done on Unix machines, but installation should work on any machine that can run Shiny server.</p>
+<p>The recommended machine configuration is</p>
+<ul class="simple">
+<li>OS: the EDB has been tested on Ubuntu 10.04, 12.04 and 14.04, but any machine that runs Shiny server should work.</li>
+<li>&gt; 7 Gb RAM</li>
+<li>&gt; 2 Gb disk; 2.0G is the size of all software dependencies and the demo dataset.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><p class="first">Install the following R packages. Some are from the general CRAN repository, while others are from Bioconductor.
-R packages can be easily installed within R with the command: <tt class="docutils literal"><span class="pre">install.packages(&lt;packageNameHere&gt;,</span> <span class="pre">dependencies=TRUE)</span></tt>.</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li>shiny (CRAN); (&gt;= 0.9.1)</li>
-<li>RColorBrewer (CRAN)</li>
-<li>doMC (CRAN) (&gt;=1.3)</li>
-<li>Biobase (BioC; &gt;=2.22.0)</li>
-<li>Gviz (BioC; &gt;=1.6.1)</li>
-<li>GenomicRanges (BioC; &gt;=1.14) &#8212;&gt; not needed; dependency of Gviz</li>
-<li>Rsamtools (BioC; &gt;=1.14) &#8212;&gt; not needed ; dependency of Gviz</li>
-<li>(optional) any BioC annotation packages you may need. e.g. For gene annotation you may need TxDb.Mmusculus.UCSC.mm9.knownGene</li>
+<p>These instructions are for a machine running Ubuntu 14.04 (LTS). I have also successfully set up the app on Debian Wheezy LTS.
+Each package will prompt saying something along the lines of &#8220;This package with require XYZ space. Continue [Y/n]?&#8221;. Type &#8220;Y&#8221;.</p>
+<ol class="arabic simple">
+<li>Install R (&gt;=3.1.0)</li>
 </ol>
-</div></blockquote>
-</li>
-<li><p class="first">Get a copy of the Shiny BrowseR code from git: git clone ...</p>
-</li>
-<li><p class="first">Move it to your shiny web directory. On most machines this is /var/shiny-server/www</p>
-</li>
+<div class="highlight-none"><div class="highlight"><pre>sudo add-apt-repository ppa:marutter/rrutter
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install r-base r-base-dev
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>Install shiny server</li>
 </ol>
+<p>First install the R shiny package:</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo su - \
+-c &quot;R -e \&quot;install.packages(&#39;shiny&#39;, repos=&#39;http://cran.rstudio.com/&#39;)\&quot;&quot;
+</pre></div>
+</div>
+<p>In ~/.profile add the following line</p>
+<div class="highlight-none"><div class="highlight"><pre>export LC_ALL=C
+</pre></div>
+</div>
+<p>Then execute ~/.profile:</p>
+<div class="highlight-none"><div class="highlight"><pre>. ~/.profile
+</pre></div>
+</div>
+<p>This will set text-encoding preferences so your error messages don&#8217;t contain strange symbols.</p>
+<p>Now download and install shiny-server:</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get install gdebi-core
+wget http://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.2.1.362-amd64.deb
+sudo gdebi shiny-server-1.2.1.362-amd64.deb
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>Install Unix packages dependencies for the R/BioConductor packages</li>
+</ol>
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get install libcurl4-openssl-dev libxml2-dev
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>Install R package dependencies</li>
+</ol>
+<p>Select your local mirror when prompted (15 for Toronto)</p>
+<div class="highlight-none"><div class="highlight"><pre>install.packages(c(&quot;shinyBS&quot;,&quot;doMC&quot;,&quot;RColorBrewer&quot;))
+</pre></div>
+</div>
 </div>
 <div class="section" id="add-data-sources">
 <h1>2. Add data sources<a class="headerlink" href="#add-data-sources" title="Permalink to this headline">¶</a></h1>
@@ -195,7 +218,7 @@ TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1. Install the Browse-R</a></li>
+<li><a class="reference internal" href="#">1. Install instructions</a></li>
 <li><a class="reference internal" href="#add-data-sources">2. Add data sources</a><ul>
 <li><a class="reference internal" href="#example-directory-structure-for-datasets">2.1. Example directory structure for datasets</a></li>
 <li><a class="reference internal" href="#dataset-config-file">2.2. Dataset config file</a></li>
