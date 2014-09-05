@@ -23,8 +23,18 @@ These instructions are for a machine running Ubuntu 14.04 (LTS). I have also suc
 Each package will prompt saying something along the lines of "This package with require XYZ space. Continue [Y/n]?". Type "Y".
 
 
-Install R (>=3.1.0)
+Clone the EDB repo
+-------------------
 
+Ignore the first line below if your machine already has git.
+
+.. code-block:: none
+	
+	sudo apt-get install git
+	git clone https://github.com/shraddhapai/shiny-data-browseR.git
+
+Install R (>=3.1.0)
+---------------------
 .. code-block:: none
 
 	sudo add-apt-repository ppa:marutter/rrutter
@@ -32,15 +42,7 @@ Install R (>=3.1.0)
 	sudo apt-get upgrade
 	sudo apt-get install r-base r-base-dev
 
-Install shiny server
-
-First install the R shiny package:
-
-.. code-block:: none
-
-	sudo su - \
-	-c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
-
+The following will set text-encoding preferences so your R error/status messages don't contain strange symbols.
 In ~/.profile add the following line
 
 .. code-block::  none
@@ -53,7 +55,17 @@ Then execute ~/.profile:
 
 	. ~/.profile
 
-This will set text-encoding preferences so your error messages don't contain strange symbols.
+
+Install shiny server
+---------------------
+
+First install the R shiny package:
+
+.. code-block:: none
+
+	sudo su - \
+	-c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
+
 
 Now download and install shiny-server:
 
@@ -63,150 +75,87 @@ Now download and install shiny-server:
 	wget http://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.2.1.362-amd64.deb
 	sudo gdebi shiny-server-1.2.1.362-amd64.deb
 
-Install Unix packages dependencies for the R/BioConductor packages
+At this point, if you point your web browser to <myIpAddress>:3838, you should see a page like this. If you don't see this, shiny server has not been correctly installed. Debug this issue first.
+
+.. figure:: images/shiny-server-worked.png
+	:width:	500px
+	:align: center
+	:alt: Shiny server test page, viewed when browser point to <my-ip-address>:3838
+
+Install Unix dependencies for the R/BioConductor packages
+-----------------------------------
 
 .. code-block:: none
 
 	sudo apt-get install libcurl4-openssl-dev libxml2-dev
 
-Install R package dependencies
+Install R and BioConductor packages
+-----------------------------------
 
-Select your local mirror when prompted (15 for Toronto)
+Start R (be sure to start as admin):
 
 .. code-block:: none
 
-	install.packages(c("shinyBS","doMC","RColorBrewer"))
+	sudo R
 
-Install BioConductor and packages needed for EDB:
+Select your local mirror when prompted (e.g. 15 for Toronto)
+
+.. code-block:: none
+
+	install.packages(c("shinyBS","doMC","RColorBrewer","latticeExtra"))
+
+Install BioConductor and package dependencies for the modified BioC package, "Gviz".
 
 .. code-block:: none
 
 	source("http://bioconductor.org/biocLite.R")
-	biocLite("BioBase")
-	biocLite("GenomicRanges")
-	biocLite("rtracklayer")
+	biocLite(c("BioBase", "GenomicRanges", "rtracklayer", "GenomicFeatures","biovizBase","Rsamtools"))
 
-Get EDB software and install the custom Gviz package within.
+Install customized "Gviz" package
+------------------------------------
+Now that all BioC dependencies have been installed, install the 'Gviz' package included in the EDB source tree. *This modified copy of Gviz is temporary. Future versions of EDB will get an updated version of Gviz directly from BioC.*
 
-< To be continued >
-.. code-blcok:: none
+Exit R and insert the following at command line:
+
+.. code-block:: none
+
+	cd shiny-data-browser/dependencies
+	sudo R CMD INSTALL Gviz
+
+Configure EDB
+------------------------------------
+
+That's it! Installation is done. Now we configure the server.
+
+.. code-block:: none
+	
+	cd /srv/shiny-server
+	mkdir EDB
+	sudo cp ~/shiny-data-browseR/*.R .
+	sudo cp -r ~/shiny-data-browseR/www .
+	sudo cp -r ~/shiny-data-browseR/data_types .
+	sudo touch restart.txt
+
+Now create a file named "config_location.txt" with the path to all your data configuration files. Save it. There should be no spaces before or after the path.  
+
+.. code-block:: none
+
+	/path/to/config/file/here
+
+At this point, you should be able to see the EDB interface in your web browser. In the image below, config_location.txt points to a dummy directory with no config files. Therefore the dropdown box for "Select a dataset" is empty.
+
+.. figure:: images/edb_before_adding_config.png
+	:width:	700px
+	:align: center
+	:alt: EDB initial page, without datasets
+
+Great! Now let's proceed to adding our custom datasets.
+
+
+	
+	
 
 	
 
 
 
-========================
-Add data sources
-========================
-To add a new dataset to the browser, you need to setup the following:
-
-#. *dataset config file*: A dataset-specific config file containing all basic informatino about the dataset
-#. *phenotype matrix*: A tab-delimited text file containing a table of sample-wise metadata and location of sample-wise data file. See section X.XX for details.
-#. *data*: The data itself - e.g. sample-wise epigenetic measures. Currently this data is expected to be in bigwig format; future releases of the browser are expected to support other file formats.
-#. *group order*: A file indicating the order in which elements of a group are assigned colours in the browser. For example, a timeseries experiment may find it useful to cause the first timepoint to be plotted as first in the series, the second timepoint as second in a series. etc., rather than rely on alphanumeric ordering of the filenames. This is the file where the relative ordering of category members is specified.
-
-**Note: The browser expects all dataset config files to be located in a single directory.** 
-The location of this directory is specified in "config_location.txt", which is located in the directory from which the app is run: e.g. */var/shiny-server/www/Shiny_BrowseR*
-
-Example directory structure for datasets
-----------------------------------------------------------
-
-.. _add-data-exampledir:
-
-*TODO Mention no constraint to have data in this structure, as links are provided for data files in phenotype matrix and config files can be symlinked.*
-In this example we have two datasets, one showing epigenetic dynamics in mouse brain development and the other, for human. Here, :code:`config_location.txt` points to a directory which also contains all browser-related metadata and the data files themselves::
-
-	<config_location_points_here>
-		 |
-		 |---- mouseBrainDev_config.txt *symlink*
-		 |---- humanBrainDNAMethylome_config.txt *symlink*
-		 |---- mouseBrainDev/
-		 		|---- config.txt
-				|---- pheno.txt
-				|---- group_order.txt
-				|---- data
-					  |---- GSM123456_mm9.bw
-					  |---- GSM654321_mm9.bw
-					  | ...
-					  |---- GSM9999_mm9.bw
-		 |---- humanBrainDNAMethylome/
-		 		|---- config.txt
-				|---- pheno.txt
-				|---- group_order.txt
-				|---- data
-					  |----
-					  |---- PCW4.bw
-					  |---- midGestation_Cortex.bw
-					  | ...
-					  |---- PostPuberty_AnteriorCingulateCortex.bw
-	     |----anno
-
-
-*TODO: Turn above into a graphic?*
-
-Dataset config file
------------------------
-
-.. _add-data-config:
-
-This file contains metadata about the dataset in general. It is a tab-delimited file with two columns: a key (controlled word) and value.
-Currently, all these fields are required:
-* ``name``: dataset name
-* ``name_color``
-* ...
-* ``datatype``: Values should be one of: ``[bigwig | BSseq]``. Indicates how data should be processed; most single continuous traces (e.g. coverage, tiling microarrays) can use the 'bigwig' setting.
-
-:ref:`Back to top <install>`
-
-Phenotype matrix
-------------------------
-
-.. _add-data-pheno:
-
-This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
-The browser expects the following columns, named exactly in this way:
-
-* sampleName *TODO or is it SampleID? Look it up!*
-* bigDataURL: Location of data file
-* all grouping columns as described in the :ref:`grouping order <add-data-grouping>` file.
-
-Groups and grouping order
----------------------------
-
-.. _add-data-grouping:
-
-The :code:`group_order.txt` file is a tab-delimited file containing a table of two columns:
-#. groupID: Group name, must match a column name in the phenotype matrix
-#. groupOrder: Order in which group members must be shown. Comma-separated collection of values. **All values for a given group must be specified here. The browser will return an error if any additional group members are found in the phenotype table but are not listed here.
-
-In addition to these groups, the browser allows a non-grouping option - i.e. viewing sample-specific data - with "Grouping: (none)". 
-
-As an example::
-
-	groupID	groupOrder
-	Tissue	Brain,Sperm
-	Diagnosis	Control,Schizophrenia,Bipolar disorder
-	TimeOfSampling	Before_Treatment,During_Treatment,After_Treatment
-
-For this dataset, the browser would show 4 grouping options: Tissue, Diagnosis, TimeOfSampling, (none).
-
- :ref:`Back to top <install>`
-
-
-========================
-Add annotation sources
-========================
-
-This is the directory structure for annotation sources::
-
-		 	   |------ hg19
-			   		   |------ cpgIslandExt.txt
-					   |------ cytoBandIdeo.txt
-					   |------ TxDb.Hsapiens.UCSC.hg19.refGene.sqlite
-			   |------ mm9
-			   		   |------ cpgIslandExt.txt
-					   |------ LAD_NPC_mm9.txt
-
-This is normal text again.
-
-:ref:`Back to top <install>`
