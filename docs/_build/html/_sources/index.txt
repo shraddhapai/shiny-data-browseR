@@ -12,26 +12,22 @@
 Epigenome Data Browse-R: an interactive statistical browser for population genomics
 ====================================================================================
 
-Click here for an `online demo <http://intangiblearts.org:8180>`_
+Visit the `online demo <http://edb.intangiblearts.org>`_
 ------------------------------------------------------------------
-
-*Please note: Initial load time may be as much as 1 minute, as the current demo is running on a slow machine.<br> An Amazon EC2-backed demo will be made available in September 2014.*
-
 Get **source code** from the  `EDB github repo <https://github.com/shraddhapai/shiny-data-browseR>`_.
 
-:message:`This documentation is under active development. This message will be removed when the first round of revisions is nearly complete. -- Shraddha Pai, 23 August 2014.`
-
+:message:`This documentation is under active development. This message will be removed when the first round of revisions is nearly complete. ETA: Early October 2014. -- Shraddha Pai, 5 September 2014.`
 
 **Manual sections**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 2 
    :numbered:
 
    install
+   add_dataset
    basic_view
    add_datatype
-
 
 Please send feedback to Shraddha [dot] Pai [at] camh [dot] ca.
 This website best viewed at 1280x800 resolution or better.

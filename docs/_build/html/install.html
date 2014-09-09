@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Epigenome Data Browse-R 0.1 beta documentation" href="index.html" />
-    <link rel="next" title="4. Using the Browse-R" href="basic_view.html" />
+    <link rel="next" title="2. Adding a new dataset" href="add_dataset.html" />
     <link rel="prev" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics" href="index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="basic_view.html" title="4. Using the Browse-R"
+          <a href="add_dataset.html" title="2. Adding a new dataset"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics"
@@ -67,24 +67,24 @@ You will need access to a machine running a web server viewable to your users.</
 </ul>
 <p>These instructions are for a machine running Ubuntu 14.04 (LTS). I have also successfully set up the app on Debian Wheezy LTS.
 Each package will prompt saying something along the lines of &#8220;This package with require XYZ space. Continue [Y/n]?&#8221;. Type &#8220;Y&#8221;.</p>
-<ol class="arabic simple">
-<li>Install R (&gt;=3.1.0)</li>
-</ol>
+<div class="section" id="clone-the-edb-repo">
+<h2>1.1. Clone the EDB repo<a class="headerlink" href="#clone-the-edb-repo" title="Permalink to this headline">¶</a></h2>
+<p>Ignore the first line below if your machine already has git.</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get install git
+git clone https://github.com/shraddhapai/shiny-data-browseR.git
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-r-3-1-0">
+<h2>1.2. Install R (&gt;=3.1.0)<a class="headerlink" href="#install-r-3-1-0" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none"><div class="highlight"><pre>sudo add-apt-repository ppa:marutter/rrutter
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install r-base r-base-dev
 </pre></div>
 </div>
-<ol class="arabic simple">
-<li>Install shiny server</li>
-</ol>
-<p>First install the R shiny package:</p>
-<div class="highlight-none"><div class="highlight"><pre>sudo su - \
--c &quot;R -e \&quot;install.packages(&#39;shiny&#39;, repos=&#39;http://cran.rstudio.com/&#39;)\&quot;&quot;
-</pre></div>
-</div>
-<p>In ~/.profile add the following line</p>
+<p>The following will set text-encoding preferences so your R error/status messages don&#8217;t contain strange symbols.
+In ~/.profile add the following line</p>
 <div class="highlight-none"><div class="highlight"><pre>export LC_ALL=C
 </pre></div>
 </div>
@@ -92,122 +92,77 @@ sudo apt-get install r-base r-base-dev
 <div class="highlight-none"><div class="highlight"><pre>. ~/.profile
 </pre></div>
 </div>
-<p>This will set text-encoding preferences so your error messages don&#8217;t contain strange symbols.</p>
+</div>
+<div class="section" id="install-shiny-server">
+<h2>1.3. Install shiny server<a class="headerlink" href="#install-shiny-server" title="Permalink to this headline">¶</a></h2>
+<p>First install the R shiny package:</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo su - \
+-c &quot;R -e \&quot;install.packages(&#39;shiny&#39;, repos=&#39;http://cran.rstudio.com/&#39;)\&quot;&quot;
+</pre></div>
+</div>
 <p>Now download and install shiny-server:</p>
 <div class="highlight-none"><div class="highlight"><pre>sudo apt-get install gdebi-core
 wget http://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.2.1.362-amd64.deb
 sudo gdebi shiny-server-1.2.1.362-amd64.deb
 </pre></div>
 </div>
-<ol class="arabic simple">
-<li>Install Unix packages dependencies for the R/BioConductor packages</li>
-</ol>
+<p>At this point, if you point your web browser to &lt;myIpAddress&gt;:3838, you should see a page like this. If you don&#8217;t see this, shiny server has not been correctly installed. Debug this issue first.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/shiny-server-worked.png"><img alt="Shiny server test page, viewed when browser point to &lt;my-ip-address&gt;:3838" src="_images/shiny-server-worked.png" style="width: 500px;" /></a>
+</div>
+</div>
+<div class="section" id="install-unix-dependencies-for-the-r-bioconductor-packages">
+<h2>1.4. Install Unix dependencies for the R/BioConductor packages<a class="headerlink" href="#install-unix-dependencies-for-the-r-bioconductor-packages" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none"><div class="highlight"><pre>sudo apt-get install libcurl4-openssl-dev libxml2-dev
 </pre></div>
 </div>
-<ol class="arabic simple">
-<li>Install R package dependencies</li>
-</ol>
-<p>Select your local mirror when prompted (15 for Toronto)</p>
-<div class="highlight-none"><div class="highlight"><pre>install.packages(c(&quot;shinyBS&quot;,&quot;doMC&quot;,&quot;RColorBrewer&quot;))
+</div>
+<div class="section" id="install-r-and-bioconductor-packages">
+<h2>1.5. Install R and BioConductor packages<a class="headerlink" href="#install-r-and-bioconductor-packages" title="Permalink to this headline">¶</a></h2>
+<p>Start R (be sure to start as admin):</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo R
+</pre></div>
+</div>
+<p>Select your local mirror when prompted (e.g. 15 for Toronto)</p>
+<div class="highlight-none"><div class="highlight"><pre>install.packages(c(&quot;shinyBS&quot;,&quot;doMC&quot;,&quot;RColorBrewer&quot;,&quot;latticeExtra&quot;))
+</pre></div>
+</div>
+<p>Install BioConductor and package dependencies for the modified BioC package, &#8220;Gviz&#8221;.</p>
+<div class="highlight-none"><div class="highlight"><pre>source(&quot;http://bioconductor.org/biocLite.R&quot;)
+biocLite(c(&quot;BioBase&quot;, &quot;GenomicRanges&quot;, &quot;rtracklayer&quot;, &quot;GenomicFeatures&quot;,&quot;biovizBase&quot;,&quot;Rsamtools&quot;))
 </pre></div>
 </div>
 </div>
-<div class="section" id="add-data-sources">
-<h1>2. Add data sources<a class="headerlink" href="#add-data-sources" title="Permalink to this headline">¶</a></h1>
-<p>To add a new dataset to the browser, you need to setup the following:</p>
-<ol class="arabic simple">
-<li><em>dataset config file</em>: A dataset-specific config file containing all basic informatino about the dataset</li>
-<li><em>phenotype matrix</em>: A tab-delimited text file containing a table of sample-wise metadata and location of sample-wise data file. See section X.XX for details.</li>
-<li><em>data</em>: The data itself - e.g. sample-wise epigenetic measures. Currently this data is expected to be in bigwig format; future releases of the browser are expected to support other file formats.</li>
-<li><em>group order</em>: A file indicating the order in which elements of a group are assigned colours in the browser. For example, a timeseries experiment may find it useful to cause the first timepoint to be plotted as first in the series, the second timepoint as second in a series. etc., rather than rely on alphanumeric ordering of the filenames. This is the file where the relative ordering of category members is specified.</li>
-</ol>
-<p><strong>Note: The browser expects all dataset config files to be located in a single directory.</strong>
-The location of this directory is specified in &#8220;config_location.txt&#8221;, which is located in the directory from which the app is run: e.g. <em>/var/shiny-server/www/Shiny_BrowseR</em></p>
-<div class="section" id="example-directory-structure-for-datasets">
-<h2>2.1. Example directory structure for datasets<a class="headerlink" href="#example-directory-structure-for-datasets" title="Permalink to this headline">¶</a></h2>
-<p id="add-data-exampledir"><em>TODO Mention no constraint to have data in this structure, as links are provided for data files in phenotype matrix and config files can be symlinked.</em>
-In this example we have two datasets, one showing epigenetic dynamics in mouse brain development and the other, for human. Here, <tt class="code docutils literal"><span class="pre">config_location.txt</span></tt> points to a directory which also contains all browser-related metadata and the data files themselves:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;config_location_points_here&gt;
-         |
-         |---- mouseBrainDev_config.txt *symlink*
-         |---- humanBrainDNAMethylome_config.txt *symlink*
-         |---- mouseBrainDev/
-                        |---- config.txt
-                        |---- pheno.txt
-                        |---- group_order.txt
-                        |---- data
-                                  |---- GSM123456_mm9.bw
-                                  |---- GSM654321_mm9.bw
-                                  | ...
-                                  |---- GSM9999_mm9.bw
-         |---- humanBrainDNAMethylome/
-                        |---- config.txt
-                        |---- pheno.txt
-                        |---- group_order.txt
-                        |---- data
-                                  |----
-                                  |---- PCW4.bw
-                                  |---- midGestation_Cortex.bw
-                                  | ...
-                                  |---- PostPuberty_AnteriorCingulateCortex.bw
-     |----anno
+<div class="section" id="install-customized-gviz-package">
+<h2>1.6. Install customized &#8220;Gviz&#8221; package<a class="headerlink" href="#install-customized-gviz-package" title="Permalink to this headline">¶</a></h2>
+<p>Now that all BioC dependencies have been installed, install the &#8216;Gviz&#8217; package included in the EDB source tree. <em>This modified copy of Gviz is temporary. Future versions of EDB will get an updated version of Gviz directly from BioC.</em></p>
+<p>Exit R and insert the following at command line:</p>
+<div class="highlight-none"><div class="highlight"><pre>cd shiny-data-browser/dependencies
+sudo R CMD INSTALL Gviz
 </pre></div>
 </div>
-<p><em>TODO: Turn above into a graphic?</em></p>
 </div>
-<div class="section" id="dataset-config-file">
-<h2>2.2. Dataset config file<a class="headerlink" href="#dataset-config-file" title="Permalink to this headline">¶</a></h2>
-<p id="add-data-config">This file contains metadata about the dataset in general. It is a tab-delimited file with two columns: a key (controlled word) and value.
-Currently, all these fields are required:
-* <tt class="docutils literal"><span class="pre">name</span></tt>: dataset name
-* <tt class="docutils literal"><span class="pre">name_color</span></tt>
-* ...
-* <tt class="docutils literal"><span class="pre">datatype</span></tt>: Values should be one of: <tt class="docutils literal"><span class="pre">[bigwig</span> <span class="pre">|</span> <span class="pre">BSseq]</span></tt>. Indicates how data should be processed; most single continuous traces (e.g. coverage, tiling microarrays) can use the &#8216;bigwig&#8217; setting.</p>
-<p><a class="reference internal" href="#install"><em>Back to top</em></a></p>
-</div>
-<div class="section" id="phenotype-matrix">
-<h2>2.3. Phenotype matrix<a class="headerlink" href="#phenotype-matrix" title="Permalink to this headline">¶</a></h2>
-<p id="add-data-pheno">This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
-The browser expects the following columns, named exactly in this way:</p>
-<ul class="simple">
-<li>sampleName <em>TODO or is it SampleID? Look it up!</em></li>
-<li>bigDataURL: Location of data file</li>
-<li>all grouping columns as described in the <a class="reference internal" href="#add-data-grouping"><em>grouping order</em></a> file.</li>
-</ul>
-</div>
-<div class="section" id="groups-and-grouping-order">
-<h2>2.4. Groups and grouping order<a class="headerlink" href="#groups-and-grouping-order" title="Permalink to this headline">¶</a></h2>
-<p id="add-data-grouping">The <tt class="code docutils literal"><span class="pre">group_order.txt</span></tt> file is a tab-delimited file containing a table of two columns:
-#. groupID: Group name, must match a column name in the phenotype matrix
-#. groupOrder: Order in which group members must be shown. Comma-separated collection of values. <a href="#id1"><span class="problematic" id="id2">**</span></a>All values for a given group must be specified here. The browser will return an error if any additional group members are found in the phenotype table but are not listed here.</p>
-<p>In addition to these groups, the browser allows a non-grouping option - i.e. viewing sample-specific data - with &#8220;Grouping: (none)&#8221;.</p>
-<p>As an example:</p>
-<div class="highlight-python"><div class="highlight"><pre>groupID groupOrder
-Tissue  Brain,Sperm
-Diagnosis       Control,Schizophrenia,Bipolar disorder
-TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
+<div class="section" id="configure-edb">
+<h2>1.7. Configure EDB<a class="headerlink" href="#configure-edb" title="Permalink to this headline">¶</a></h2>
+<p>That&#8217;s it! Installation is done. Now we configure the server.</p>
+<div class="highlight-none"><div class="highlight"><pre>cd /srv/shiny-server
+mkdir EDB
+sudo cp ~/shiny-data-browseR/*.R .
+sudo cp -r ~/shiny-data-browseR/www .
+sudo cp -r ~/shiny-data-browseR/data_types .
+sudo touch restart.txt
 </pre></div>
 </div>
-<p>For this dataset, the browser would show 4 grouping options: Tissue, Diagnosis, TimeOfSampling, (none).</p>
-<blockquote>
-<div><a class="reference internal" href="#install"><em>Back to top</em></a></div></blockquote>
-</div>
-</div>
-<div class="section" id="add-annotation-sources">
-<h1>3. Add annotation sources<a class="headerlink" href="#add-annotation-sources" title="Permalink to this headline">¶</a></h1>
-<p>This is the directory structure for annotation sources:</p>
-<div class="highlight-python"><div class="highlight"><pre>|------ hg19
-                |------ cpgIslandExt.txt
-                |------ cytoBandIdeo.txt
-                |------ TxDb.Hsapiens.UCSC.hg19.refGene.sqlite
-|------ mm9
-                |------ cpgIslandExt.txt
-                |------ LAD_NPC_mm9.txt
+<p>Now create a file named &#8220;config_location.txt&#8221; with the path to all your data configuration files. Save it. There should be no spaces before or after the path.</p>
+<div class="highlight-none"><div class="highlight"><pre>/path/to/config/file/here
 </pre></div>
 </div>
-<p>This is normal text again.</p>
-<p><a class="reference internal" href="#install"><em>Back to top</em></a></p>
+<p>At this point, you should be able to see the EDB interface in your web browser. In the image below, config_location.txt points to a dummy directory with no config files. Therefore the dropdown box for &#8220;Select a dataset&#8221; is empty.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/edb_before_adding_config.png"><img alt="EDB initial page, without datasets" src="_images/edb_before_adding_config.png" style="width: 700px;" /></a>
+</div>
+<p>Great! Now let&#8217;s proceed to adding our custom datasets.</p>
+</div>
 </div>
 
 
@@ -218,23 +173,24 @@ TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1. Install instructions</a></li>
-<li><a class="reference internal" href="#add-data-sources">2. Add data sources</a><ul>
-<li><a class="reference internal" href="#example-directory-structure-for-datasets">2.1. Example directory structure for datasets</a></li>
-<li><a class="reference internal" href="#dataset-config-file">2.2. Dataset config file</a></li>
-<li><a class="reference internal" href="#phenotype-matrix">2.3. Phenotype matrix</a></li>
-<li><a class="reference internal" href="#groups-and-grouping-order">2.4. Groups and grouping order</a></li>
+<li><a class="reference internal" href="#">1. Install instructions</a><ul>
+<li><a class="reference internal" href="#clone-the-edb-repo">1.1. Clone the EDB repo</a></li>
+<li><a class="reference internal" href="#install-r-3-1-0">1.2. Install R (&gt;=3.1.0)</a></li>
+<li><a class="reference internal" href="#install-shiny-server">1.3. Install shiny server</a></li>
+<li><a class="reference internal" href="#install-unix-dependencies-for-the-r-bioconductor-packages">1.4. Install Unix dependencies for the R/BioConductor packages</a></li>
+<li><a class="reference internal" href="#install-r-and-bioconductor-packages">1.5. Install R and BioConductor packages</a></li>
+<li><a class="reference internal" href="#install-customized-gviz-package">1.6. Install customized &#8220;Gviz&#8221; package</a></li>
+<li><a class="reference internal" href="#configure-edb">1.7. Configure EDB</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#add-annotation-sources">3. Add annotation sources</a></li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Epigenome Data Browse-R: an interactive statistical browser for population genomics</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="basic_view.html"
-                        title="next chapter">4. Using the Browse-R</a></p>
+  <p class="topless"><a href="add_dataset.html"
+                        title="next chapter">2. Adding a new dataset</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -259,7 +215,7 @@ TimeOfSampling  Before_Treatment,During_Treatment,After_Treatment
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="basic_view.html" title="4. Using the Browse-R"
+          <a href="add_dataset.html" title="2. Adding a new dataset"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Epigenome Data Browse-R: an interactive statistical browser for population genomics"

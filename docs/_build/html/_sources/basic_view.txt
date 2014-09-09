@@ -5,7 +5,7 @@
 	:numbered:
 
 ========================
-Using the Browse-R
+Navigating the Browse-R
 ========================
 This section provides a tour of the capabilities of the browser.
 

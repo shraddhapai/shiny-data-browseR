@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Extending Browse-R capabilities &mdash; Epigenome Data Browse-R 0.1 beta documentation</title>
+    <title>6. Extending Browse-R capabilities &mdash; Epigenome Data Browse-R 0.1 beta documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Epigenome Data Browse-R 0.1 beta documentation" href="index.html" />
-    <link rel="prev" title="4. Using the Browse-R" href="basic_view.html" /> 
+    <link rel="prev" title="5. Navigating the Browse-R" href="basic_view.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="basic_view.html" title="4. Using the Browse-R"
+          <a href="basic_view.html" title="5. Navigating the Browse-R"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Epigenome Data Browse-R 0.1 beta documentation</a> &raquo;</li> 
       </ul>
@@ -48,11 +48,11 @@
             
   <p>.._add_datatype:</p>
 <div class="section" id="extending-browse-r-capabilities">
-<h1>5. Extending Browse-R capabilities<a class="headerlink" href="#extending-browse-r-capabilities" title="Permalink to this headline">¶</a></h1>
+<h1>6. Extending Browse-R capabilities<a class="headerlink" href="#extending-browse-r-capabilities" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="add-a-datatype-handler">
-<h2>5.1. Add a datatype handler<a class="headerlink" href="#add-a-datatype-handler" title="Permalink to this headline">¶</a></h2>
+<h2>6.1. Add a datatype handler<a class="headerlink" href="#add-a-datatype-handler" title="Permalink to this headline">¶</a></h2>
 <p>The Shiny Browse-R is easily customizable to show data from a new platform; all that is required is the addition of a platform-specific .R file in the code directory. For illustration, let us suppose we want to add a new datatype of 450K microarrays.</p>
-<p>These steps will allow a new &#8216;datatype&#8217; value to be specified in a <a class="reference internal" href="install.html#add-data-config"><em>dataset config</em></a> file. In our example, let that datatype be &#8220;FourFiftyK&#8221;.</p>
+<p>These steps will allow a new &#8216;datatype&#8217; value to be specified in a <a class="reference internal" href="add_dataset.html#add-data-config"><em>dataset config</em></a> file. In our example, let that datatype be &#8220;FourFiftyK&#8221;.</p>
 <ol class="arabic">
 <li><p class="first">Create FourFiftyK.R in the <tt class="docutils literal"><span class="pre">data_types</span></tt> directory; the latter is at the same level with ui.R and server.R)</p>
 </li>
@@ -77,13 +77,13 @@ aggFUN=mean     ##&lt;&lt;(function) aggregating function
 <p>}</p>
 </div>
 <div class="section" id="current-datatypes">
-<h2>5.2. Current datatypes<a class="headerlink" href="#current-datatypes" title="Permalink to this headline">¶</a></h2>
+<h2>6.2. Current datatypes<a class="headerlink" href="#current-datatypes" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="bigwig">
-<h3>5.2.1. bigwig<a class="headerlink" href="#bigwig" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.1. bigwig<a class="headerlink" href="#bigwig" title="Permalink to this headline">¶</a></h3>
 <p>Used for any datatype which can be represented with a single column containing a continuous value.</p>
 </div>
 <div class="section" id="bsseq">
-<h3>5.2.2. BSseq<a class="headerlink" href="#bsseq" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.2. BSseq<a class="headerlink" href="#bsseq" title="Permalink to this headline">¶</a></h3>
 <p>Used for bisulfite-seq data. Usually has two columns, M and COV, which are combined into a %methylation over an arbitrary genomic interval (e.g. in 2Kb bins, or over a gene).</p>
 <p>Example view of input file:</p>
 <p>Custom columns are:
@@ -108,11 +108,11 @@ aggFUN=mean     ##&lt;&lt;(function) aggregating function
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Extending Browse-R capabilities</a><ul>
-<li><a class="reference internal" href="#add-a-datatype-handler">5.1. Add a datatype handler</a></li>
-<li><a class="reference internal" href="#current-datatypes">5.2. Current datatypes</a><ul>
-<li><a class="reference internal" href="#bigwig">5.2.1. bigwig</a></li>
-<li><a class="reference internal" href="#bsseq">5.2.2. BSseq</a></li>
+<li><a class="reference internal" href="#">6. Extending Browse-R capabilities</a><ul>
+<li><a class="reference internal" href="#add-a-datatype-handler">6.1. Add a datatype handler</a></li>
+<li><a class="reference internal" href="#current-datatypes">6.2. Current datatypes</a><ul>
+<li><a class="reference internal" href="#bigwig">6.2.1. bigwig</a></li>
+<li><a class="reference internal" href="#bsseq">6.2.2. BSseq</a></li>
 </ul>
 </li>
 </ul>
@@ -121,7 +121,7 @@ aggFUN=mean     ##&lt;&lt;(function) aggregating function
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="basic_view.html"
-                        title="previous chapter">4. Using the Browse-R</a></p>
+                        title="previous chapter">5. Navigating the Browse-R</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -146,7 +146,7 @@ aggFUN=mean     ##&lt;&lt;(function) aggregating function
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="basic_view.html" title="4. Using the Browse-R"
+          <a href="basic_view.html" title="5. Navigating the Browse-R"
              >previous</a> |</li>
         <li><a href="index.html">Epigenome Data Browse-R 0.1 beta documentation</a> &raquo;</li> 
       </ul>

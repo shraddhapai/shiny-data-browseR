@@ -114,11 +114,11 @@ Adding demo datasets
 
 In this example, the demo data and config files are contained in a directory named "Shiny_BrowseR_Github_data". 
 
-From the source machine, rsync the datasets to the machine where the EDB instance will be hsoted. Here we copy it to our user's home directory.
+From the source machine, rsync the datasets to the machine where the EDB instance will be hsoted. The data directory should be in a location readable by the user shiny, which will run the EDB app.
 
 .. code-block:: none 
 
-	rsync -avL --progress Shiny_BrowseR_Github_data $DEST_MACHINE:/home/<user>/.
+	rsync -avL --progress Shiny_BrowseR_Github_data $DEST_MACHINE:/.
 
 On the destination machine, we update the path in the metadata files to reflect the path on our new machine. **Replace the substitution sed command with one relevant to your source and destination paths.**
 
@@ -126,7 +126,7 @@ Below we update the paths in the data dirs as well as the annotation directory (
 
 .. code-block:: none
 
-	cd ~/Shiny_BrowseR_Github_data
+	cd /Shiny_BrowseR_Github_data
 	rm *_config.txt
 	cd mTAG_BrainSperm
 	sed -i 's/\/src\/path\/dir/\/dest\/path/g' *.txt
@@ -137,8 +137,20 @@ Below we update the paths in the data dirs as well as the annotation directory (
 
 Create a symlink to dataset-specific config files in the data directory
 
-We change ``/srv/shiny-server/EDB/config_location.txt`` to point to our new data directory path: ``/home/<user>/Shiny_BrowseR_Github_data``
+We change ``/srv/shiny-server/EDB/config_location.txt`` to point to our new data directory path: ``/Shiny_BrowseR_Github_data``
 
+At this point, refresh the EDB. If the "Choose dataset" dropdown box is populated, shiny can see the datasets. 
+
+.. figure:: images/edb_dataset_loads.png
+	:align: center
+	:alt: "Choose dataset" dropdown box populates, indicating EDB can see the data directory and read the config files.
+
+
+If not, stop here and check the following:
+
+* Is the data root directory in a location with read permissions for user "shiny"?
+* Have the paths been correctly updated for all dataset directories?
+* Is config_location.txt pointing to the correct data directory?
 
 ========================
 Add annotation sources
