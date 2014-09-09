@@ -20,45 +20,46 @@ configSet <- listConfig() # load config for all datasets
 shinyServer(
 function(input, output, session){
 		cat("In shinyServer\n")
-		updateCollapse(session, id = "main_collapse",  open = "col_plot", close = NULL)
+		updateCollapse(session, id = "main_collapse",  
+                       open = "col_plot", close = NULL)
 
-	# which button was last pressed?updateCollapse(session, id = "collapse1", multiple = FALSE, open = NULL, close = NULL)
+	# which button was last pressed?
 	# this is needed to separate data load from plot plot.
 	values <- reactiveValues()
 	values$lastAction <- NULL
-	observe({if (input$getData!=0) { values$lastAction <- "data"}})
-	observe({if (input$loadPlot!=0) {values$lastAction <- "plot"}})
+	observe({if ( input$getData!=0 ) { values$lastAction <- "data"}})
+	observe({if ( input$loadPlot!=0 || input$loadPlot2!=0 ) {values$lastAction <- "plot"}})
 
 	# tier 0 : shows up when page is loaded.
 	output$pickData <- renderUI({selectInput("dataset", "", names(configSet), width="750px")	})
 	# tier 1 : happens when 'make active dataset' button is clicked.
     refreshConfig <- reactive({
-
 		plot_alertTxt <- paste(
-			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>Dataset selected.</div>",
-			"At this point, simply click the <span style='font-weight:800'>'Update Plot'</span> button on the top-right to load a default view in this panel.<p>&nbsp;<p>",
+			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>",
+            "Dataset selected.</div>",
+			"At this point, simply click <span style='font-weight:800'>'Refresh plot'</span> to load a default view in this panel.<br>",
 			'Alternately,  you may want to first customize the plot by changing settings in the three panels below: { <span style="font-weight:800">Settings, Sample Selector, Genome Annotation</span> }.<br>',
 			"<span style='font-weight:800'>Modify and refresh the plot as many times as you need.</span> <br>",
-			"Some changes will require a button refresh, while others will update automatically! Settings will usually indicate which is the case.<p>.&nbsp; </p>",
+			"Some changes will require a button refresh, while others will update automatically! Settings will usually indicate which is the case.<br>",
 			"( By the way -- this panel collapses too. Feel free to get it out of the way while you're tinkering. )",
 			sep="")
 
    		if (input$getData == 0) return(NULL) # only depends on first button
-		createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message=plot_alertTxt, type="info",
-					dismiss=FALSE,append=FALSE)
-		updateCollapse(session, id="main_collapse", open="col_settings", close="col_activate")
-		if (verbose) cat("* Refreshing config")
+		createAlert(session, inputId="plot_statusMsg", 
+                    alertId="alert_statusMsg", message=plot_alertTxt, 
+                    type="info",dismiss=FALSE,append=FALSE)
+		updateCollapse(session, id="main_collapse", open="col_settings", 
+                       close="col_activate")
+		
+        if (verbose) cat("* Refreshing config")
 		settings <- configSet[[input$dataset]]
 		allDat <- settings$allDat
 		chromsize <- settings$chromsize
 		groupKey <- settings$groupKey
 		configParams <- settings$configParams
+
 		isolate({return(settings)})
    })
-
-  #output$welcome_msg <- renderUI({
-#		  createAlert(session,inputId="intro_msg", message="The view is made of 5 panels below. Each can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel. (Click the 'X' to dismiss this panel).",type="info",dismiss=TRUE)
- # })
 
   output$o_groupBy <- renderUI({ 
   if (input$getData == 0) return(NULL)
@@ -208,14 +209,17 @@ function(input, output, session){
 	checkboxGroupInput("anno", "The following annotation tracks are available for the current genome build:", choices=anno$name, selected=NULL)
   })
 
-  ################################################################################################################################################################
-	# tier 2: happens when 'Compute Plots' button is clicked.
+    # ######################################################################
+    # TIER 2 : happens when 'Compute Plots' button is clicked.
+    # ######################################################################
 	refreshData  <- reactive({
-    if(input$loadPlot == 0) return(NULL)
-    return(isolate({ # everything in this function waits for actionButton() to be selected before executing
+    if(input$loadPlot == 0 && input$loadPlot2 == 0) return(NULL)
+    return(isolate({ # everything in this function waits for actionButton() 
+                     # to be selected before executing
 		if (verbose) cat("* In refreshData()\n")
+
 		settings <- refreshConfig()
-		cat("got out got out\n")
+        cat("\t got config\n")
 
 		# re-create data matrix from selectableDataTable input
 		myfiles <- settings$allDat
@@ -282,7 +286,7 @@ function(input, output, session){
 cat("In renderPlot\n")
   if (is.null(values$lastAction)) return(NULL)
   if (values$lastAction=="data") return(NULL)
-  if (input$loadPlot==0) return(NULL)
+  if (input$loadPlot==0 & input$loadPlot2 == 0 ) return(NULL)
 updateCollapse(session, id = "main_collapse", multiple=TRUE,close=c("col_activate","col_genomeAnnot","col_sampleSel","col_settings"),open="col_plot")
 
     myOut <- isolate({refreshData()});if(is.null(myOut)) return(NULL)
@@ -312,7 +316,7 @@ updateCollapse(session, id = "main_collapse", multiple=TRUE,close=c("col_activat
 		isolate({selAnno <- input$anno})
 		closeAlert(session,alertId="alert_statusMsg")
         
-          mkScat(session, statusId="plot_statusMsg", myfiles=myfiles, outdat = outdat,configParams=settings$configParams,
+        mkScat(session, statusId="plot_statusMsg", myfiles=myfiles, outdat = outdat,configParams=settings$configParams,
                  groupKey=groupKey, groupBy=input$groupBy, 
 				 colorBy=input$colorBy, oCol=input$oCol, 				# color
 				 plotViewType=input$plotType, plotType="smoo2", 		# plot type
@@ -322,31 +326,12 @@ updateCollapse(session, id = "main_collapse", multiple=TRUE,close=c("col_activat
 				 plotTxt=myOut$plotTxt,selAnno=selAnno,
 				 verbose=TRUE
           )
+
+		updateCollapse(session, id="main_collapse", 
+                       open=c("col_plot", "col_settings"))
         }
-	  #updateTabsetPanel(session,"main_tabset", "Plot")
   })
 
-#  output$err1 <- renderUI({
-#  HTML("")
-#  cat("is err1 calling me?\n")
-#    endDat <- refreshData()
-#	# if character then it's an error message - needs to be printed
-#    if(class(endDat)=="character") mess <- endDat
-#    else if(is.null(endDat)) mess <- "<h4 id=errorMessage1 style='color:slategray'>Click <i>'Compute Plots'</i> to see default view<p>OR<p>Adjust settings and then hit <i>'Compute Plots'</i></h4>"
-#    else {
-#      endDat <- endDat[["outdat"]]
-#      mess <- "All is right with the world."
-#    }
-#  HTML(mess)
- ## })
-
-  #observe({
- #	print("click event")
-#	print(input$o_sampleTable)
-  #})
-
 }) # end of shinyServer function
-
-########################################################################################################
 
 
