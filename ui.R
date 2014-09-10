@@ -9,7 +9,7 @@ progressImage <- "images/spinner.gif"
 
 #############################
 # UI CONTROL OBJECTS . SEE BELOW for UI layout 
-default.range <- c(0,5e5) + 20e6
+default.range <- c(27918683,27967413)
 
 HTML_ButtonClickText <-   HTML(paste(
     '<script type="text/javascript">',
@@ -29,8 +29,8 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
   	HTML('<div class="cutefont">Genome Location</div><span style="font-style:italic" class="text-info">Manual plot update required</span><p>'),
     fluidRow(
         column(4,uiOutput("mychrom")),
-        column(4,numericInput("myrange1", "x-range, from:", default.range[1])),
-        column(4, numericInput("myrange2", "x-range, to:", default.range[2]))
+        column(4,numericInput("xlim1", "x-range, from:", default.range[1])),
+        column(4, numericInput("xlim2", "x-range, to:", default.range[2]))
     ),
     uiOutput("csize"),
     uiOutput("coordSize"),
@@ -98,23 +98,22 @@ suppressWarnings(shinyUI(fluidPage(
   # main header showing title
   HTML('<div class="pagebar-col">'),
   fluidRow(
-  	column(9, HTML('<a href="https://github.com/shraddhapai/shiny-data-browseR"><img src="images/title.png", width=400></a>')
+  	column(11, HTML('<a href="https://github.com/shraddhapai/shiny-data-browseR"><img src="images/title.png", width=400></a>')
     ),
-    column(3,
+    column(1,
   		conditionalPanel("input.getData>0",
   		shiny::tags$button(id="loadPlot2", type="button",
-    	class="btn action-button btn-success btn-xlg", 
-      HTML("   Refresh Plot   "))
+    	class="btn action-button btn-success", 
+      HTML('<img src="images/refresh.png" style="width:20px;height:20px">'))
     ))
   ),
   HTML('</div>'),
-    HTML('<div class="pagebar-col2">'),uiOutput("dataname"),uiOutput("data_desc"),HTML('</div>'),
   HTML('</div>'),
-
+  HTML(paste('<div class="pagebar-col2" style="height:60px;font-size:16px; color:#c0e4ff; width:1268px;margin-bottom:10px">',
+                        '<span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!   </span>',
+                        'Start by selecting a dataset. To restart the browse-R, reload this page.<br>Click panel titles to expand/collapse. ',
+                        '</div>',sep="")),
   HTML_ButtonClickText,
-  HTML('<div style="height:30px"></div>'),
-  HTML('<h5 class="text-info"><i>Need to get back to baseline?</i> The browseR can be restarted by refreshing this page on your browser.</h5>'),
-
     
     # #############################################################
     # COLLAPSIBLE PANELS
@@ -122,13 +121,13 @@ suppressWarnings(shinyUI(fluidPage(
     bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
 
        bsCollapsePanel(title="Choose dataset",
-    	HTML('<div style="height:200px">'),
+    	HTML('<div style="height:100px">'),
   		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select a dataset. Then click "Make active dataset".</h4>&nbsp;<br>'),
   		fluidRow(
     	column(7,uiOutput("pickData")),
-    	column(2,
-    		shiny::tags$button(id="getData",
-    						   type="button", class="btn action-button btn-lg btn-info", HTML("Make active dataset")))
+    	column(2, shiny::tags$button(id="getData",
+                                     type="button", class="btn action-button btn-lg btn-info", 
+                                     HTML("Make active dataset")))
     	),
     	HTML("</div>"),
     	id="col_activate", value="activate"
@@ -136,23 +135,31 @@ suppressWarnings(shinyUI(fluidPage(
 
     	bsCollapsePanel("Plot view",
     		conditionalPanel("input.getData>0",
-                 shiny::tags$button(id="loadPlot", type="button",
-                                    class="btn action-button btn-success btn-xlg", 
-                                    HTML("   Refresh plot   ")
-                                    ),
-    			 bsAlert(inputId="plot_statusMsg"),
-    			 bsProgressBar("load_pBar", value=0,
+               HTML('<div class="pagebar-col2">'),
+               uiOutput("dataname"),
+               uiOutput("data_desc"),
+               fluidRow(
+                        column(11,HTML("")
+                        ),column(1,
+                            shiny::tags$button(id="loadPlot", type="button",
+                            class="btn action-button btn-success", 
+                            HTML('<img src="images/refresh.png" "style:width=10px;height:10px">')
+                        ))
+                        ),
+               HTML("</div>"),
+               bsAlert(inputId="plot_statusMsg"),
+                 bsProgressBar("load_pBar", value=0,
                                visible=FALSE, color="standard",
                                striped=TRUE, animate=FALSE),
     			uiOutput("plot_welcome"),
-    			 plotOutput("scatplot",height="300px")
+    			 plotOutput("scatplot",height="400px")
     			),
     	id="col_plot",value="outplot"
     	),
 
     	bsCollapsePanel("Settings",
     	  	conditionalPanel("input.getData>0",
-    		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Customize plot settings</h4>&nbsp;<br>'),
+    	    HTML('<h4 class="text-primary" style="margin-bottom:0px;">Customize plot settings </h4>&nbsp;<br>'),
     		fluidRow(
     	  		column(4,well_distStartPanel),
     			column(4,well_chooseGroups),
@@ -215,5 +222,6 @@ suppressWarnings(shinyUI(fluidPage(
               "Select if y-axis should have default or custom limits",
               "right"),
     HTML('<h4>For code, technical documentation, and user manual, visit <a href="https://github.com/shraddhapai/shiny-data-browseR">EDB @ github</a></h4>'),
+    
     HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai, Centre for Addiction and Mental Health. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 or better, and has been tested in Firefox 31.0 and Chrome 37.0 </div>')
     )))

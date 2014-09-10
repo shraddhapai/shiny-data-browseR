@@ -6,6 +6,7 @@ statusId,
 myfiles, # the config file
 outdat, # the main output from reactive function
 configParams, ##<<(list) key-value pairs from config.txt
+xlim,
 groupKey,	##<<(list) key: group category, value: order of group names
 groupBy,	##<<(character) column to group by. Must be a key in "groupKey" object
 colorBy,	##<<(character) variable to colour by. Must be a key in "groupKey" object
@@ -31,6 +32,7 @@ if("chrom" %in% colnames(outdat)){
 }
 outdat <- outdat[order(outdat$start),]
 
+
 if (verbose) cat("\toutdat successfully reordered\n")
 
 # defining variables
@@ -44,11 +46,13 @@ if (groupBy=="(none)") {
 }
 
 # x/y limits, smoothing param
-xlim <- c(min(outdat$start), max(outdat$start))  
 if(whichYlim == "def"){
 	tmp_mat <- as.matrix(outdat[,-c(1,2,grep("min",colnames(outdat)), grep("max",colnames(outdat)))])
 	tmp <- na.omit(as.numeric(tmp_mat)); myYlim <- quantile(tmp,c(0.005,0.99)); 
 } else myYlim <- customYlim
+
+print("Ylim\n")
+print(myYlim)
 bw <- param2
 xvals <- outdat$start
 
@@ -79,7 +83,6 @@ if(!groupBy %in% "(none)"){
 	if (is.null(mygroups)) return(NULL)
 	if (plotViewType=="l") plotViewType <- "a" # when grouping, we want to show the mean
 	
-	
 	outdat <- outdat[,-(1:2)]
 	
 	# set colour and fill
@@ -95,16 +98,26 @@ if(!groupBy %in% "(none)"){
 		vals <- smooMat(outdat,bw,xvals,1:ncol(outdat))
 	}
 	mcols(plot_GR) <- vals;
+    #head(plot_GR)
+    #print(summary(vals))
 	
 	# create data track
 	cat("\t* Created data track\n")
 	g <- groupKey[[groupBy]]; g <- g[which(g %in% mygroups)]
 	cat(sprintf("Plot view type=%s\n", plotViewType))
-	
-	cat("going to get DataTrack\n")
-	dTrack <- DataTrack(plot_GR,groups=factor(myfiles[,groupBy],levels=g),
+
+    g_samples   <- factor(myfiles[,groupBy],levels=g);
+    g_count     <- as.integer(table(g_samples)) 
+    
+    # convert groupname from "myGroup" to "myGroup (5)" where 5 is the number of samples in that group.
+    g_newGroupNames  <- paste(g, paste(paste(rep("(",length(g_count)), g_count,sep=""), rep(")",length(g_count)),sep=""),sep=" ")
+    g_newSampGroups <- myfiles[,groupBy]
+    for (i in 1:length(g)) { 
+            g_newSampGroups[which(g_newSampGroups == g[i])] <- g_newGroupNames[i]
+    }
+
+	dTrack <- DataTrack(plot_GR,groups=factor(g_newSampGroups,levels=g_newGroupNames),levels=g_newGroupNames,
 		col=colist,fill=filldat, type=plotViewType,name=configParams[["ylabel"]])
-	cat("Got dataTrack\n")
 	
 	# ######################################################
 	# View mode 2: Individual samples
@@ -113,7 +126,9 @@ if(!groupBy %in% "(none)"){
   
 	smpsGrps <- getSampleOrder(myfiles,groupKey)
 	midx <- match(myfiles$sampleName, colnames(outdat))
-	if (all.equal(colnames(outdat)[midx],myfiles$sampleName)!=T) { cat("sample names don't match output matrix column names. Check?")}
+	if (all.equal(colnames(outdat)[midx],myfiles$sampleName)!=T) { 
+            cat("sample names don't match output matrix column names. Check?")
+    }
 	outdat <- outdat[,midx]
 	if (nrow(myfiles)==1) { outdat <- as.matrix(outdat); colnames(outdat) <- myfiles$sampleName }
 
@@ -122,10 +137,15 @@ if(!groupBy %in% "(none)"){
 	
 	if (plotType == "smoo2") outdat <- smooMat(outdat,param2, xvals,1:ncol(outdat))
 	mcols(plot_GR) <- outdat
-	dTrack <- DataTrack(plot_GR, legend=legd,groups=smpsGrps[,"sampleName"],
+	dTrack <- DataTrack(plot_GR, groups=smpsGrps[,"sampleName"],
 		aggregateGroups=F,type=plotViewType,
 		col=colist,name=configParams[["ylabel"]])
 } 
+
+
+# ######################################################
+# Track setup and plot
+
 cat("setting display track\n")
 displayPars(dTrack)  <- list(
 	cex.title=1.5,background.title='cyan4', 
@@ -134,22 +154,41 @@ displayPars(dTrack)  <- list(
 	grid=TRUE,ylim=myYlim
 	)
 
-eleft <- max(10,0.1 * diff(xlim))
-finalTracks <- list(itrack,gtrack,dTrack)
-
-sizes <- c(0.05,0.15,1.0)
-createAlert(session, inputId=statusId, alertId="alert_statusMsg", message="Fetching annotation", type="warning",dismiss=FALSE,append=FALSE)
+# Getting annotation
+createAlert(session, inputId=statusId, alertId="alert_statusMsg", 
+            message="Fetching annotation", type="warning",dismiss=FALSE,append=FALSE)
 cat("* About to get anno\n")
+sizes <- c(0.05,0.18,1.0)
 if (!is.null(selAnno)) {
 	cat("\t* Collecting annotation tracks\n")
-	annoTracks <- getAnnoTracks(configParams$annoConfig, selAnno,GRanges(setchrom,IRanges(xlim[1],xlim[2])),configParams$genomeName)
-	finalTracks <- c(finalTracks, annoTracks$tracks)
+	annoTracks <- getAnnoTracks(configParams$annoConfig, selAnno,
+                                GRanges(setchrom,IRanges(xlim[1],xlim[2])),configParams$genomeName)
+	finalTracks <- list(itrack,gtrack, dTrack, annoTracks$tracks)
 	sizes <- c(sizes, annoTracks$sizes)
+} else {
+    finalTracks <- list(itrack,gtrack,dTrack)
 }
 
-if (xlim[2]-xlim[1] > 3e5) gsize <- 0.05 else gsize <- 0.1
-ttl <- sprintf("%s: %s, %1.1f-%1.1f Mb ; Groups: {%s}", plotTxt,setchrom, xlim[1]/1e6, xlim[2]/1e6, paste(mygroups,sep=",",collapse=","))
-createAlert(session, inputId=statusId, alertId="alert_statusMsg", message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
+# Create plot title string
+groupStr <- ""
+nSamp <- ncol(mcols(plot_GR))
+if (groupBy == "(none)") {
+    groupStr <- sprintf("%i Samples, UNGROUPED", nSamp)
+} else {
+    groupStr <- sprintf("%i Samples, AVERAGED BY %s", nSamp, groupBy)
+}
+
+if (diff(xlim) > 2e6) {
+    xlim_str <- sprintf("%1.1f - %1.1f Mb", xlim[1]/1e6, xlim[2]/1e6)
+} else {
+    xlim_str <- sprintf("%s - %s bp", prettyNum(xlim[1]/1e3,big.mark=","), prettyNum(xlim[2]/1e3,big.mark=","))
+}
+
+ttl <- sprintf("%s: %s: %s\n%s", plotTxt,setchrom, xlim_str, groupStr)
+createAlert(session, inputId=statusId, alertId="alert_statusMsg", 
+            message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
+
+eleft <- max(10,0.1 * diff(xlim))
 t0 <- system.time(
 	plotTracks(finalTracks, sizes=sizes,
 		min.width=1, extend.left=eleft, lwd=2,
@@ -226,8 +265,10 @@ print(system.time(trackList <- foreach (k=1:nrow(dat)) %dopar% {
 			fill=curr$color, col=curr$color)
 		return(tr)
 }))
+
 return(list(tracks=trackList,sizes=dat$sizes))
 }
+
 
 
 getIdeo <- function# return ideogram track
@@ -236,8 +277,9 @@ inFile, ##<<(character) ideogram file from config.txt
 genomeName, ##<<(character) genome name
 chr
 ) {
-dat <- read.delim(inFile,sep="\t",header=T,as.is=T)
-return(IdeogramTrack(chr, genomeName, bands=dat))
+    dat <- read.delim(inFile,sep="\t",header=T,as.is=T)
+    
+    return(IdeogramTrack(chr, genomeName, bands=dat))
 }
 
 

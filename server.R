@@ -2,7 +2,9 @@ suppressMessages(require(shiny))
 suppressMessages(require(GenomicRanges))
 suppressMessages(require(RColorBrewer))
 suppressMessages(require(rtracklayer))
-suppressMessages(require(doMC)); registerDoMC(5) #TODO make this a param in config file
+suppressMessages(require(doMC)); 
+
+registerDoMC(5) #TODO make this a param in config file
 
 source("process_samps.R")
 source("plotters.R")
@@ -36,12 +38,9 @@ function(input, output, session){
     refreshConfig <- reactive({
 		plot_alertTxt <- paste(
 			"<div style='font-size:20px;font-weight:800;margin-bottom:10px'>",
-            "Dataset selected.</div>",
-			"At this point, simply click <span style='font-weight:800'>'Refresh plot'</span> to load a default view in this panel.<br>",
-			'Alternately,  you may want to first customize the plot by changing settings in the three panels below: { <span style="font-weight:800">Settings, Sample Selector, Genome Annotation</span> }.<br>',
-			"<span style='font-weight:800'>Modify and refresh the plot as many times as you need.</span> <br>",
-			"Some changes will require a button refresh, while others will update automatically! Settings will usually indicate which is the case.<br>",
-			"( By the way -- this panel collapses too. Feel free to get it out of the way while you're tinkering. )",
+            'Click <img src="images/refresh.png" style="width:20px;background-color:#00cc00;margin:5px; padding:3px"> to see a default plot.<br>',
+            "Or scroll down to customize first.<br>",
+            "</div>",
 			sep="")
 
    		if (input$getData == 0) return(NULL) # only depends on first button
@@ -74,8 +73,12 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-	blank <- HTML('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px"><span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span><br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, "Select dataset".</div>');
-   if (input$getData == 0) return(blank)
+	blank <- HTML(paste('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px">',
+                        '<span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span>',
+                        '<br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking ',
+                        'on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, ',
+                        '"Select dataset".</div>',sep=""));
+   if (input$getData == 0) return(NULL)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
 		column(9,
@@ -87,6 +90,8 @@ function(input, output, session){
 	), 	column(3,HTML(sprintf('<em style="margin-top:10px;color:#ffd357">%i samples available</em>', 
 		nrow(settings$allDat))))
 	)})
+
+
   output$data_desc <- renderUI({
 	blank <- HTML('<div height:50px">&nbsp;</div>');
    if (input$getData == 0) return(blank)
@@ -94,9 +99,9 @@ function(input, output, session){
 	fluidRow(
 		column(8,HTML(sprintf('<div style="margin-left:10px;margin-top:10px"><span style="#ffffff;font-weight:800">Description:  </span><span style="color:#c0e4ff;font-weight:400">%s</span></div>',settings$configParams[["description"]]))),
 		column(1,HTML("")),
-		column(2,HTML(sprintf('<span>Platform/assay: <span style="color:#c0e4ff">%s</span></span>', 
-		settings$configParams[['platformName']]))
-	))
+		column(2,HTML(sprintf('<span>Platform/assay:<br><span style="color:#c0e4ff">%s</span></span>', 
+		settings$configParams[['platformName']])))
+	)
 	})
 
 	output$o_sampleCount <- renderUI({
@@ -136,7 +141,7 @@ function(input, output, session){
   })
   
   output$coordSize <- renderUI({ #region width message
-    r1 <- input$myrange1; r2 <- input$myrange2
+    r1 <- input$xlim1; r2 <- input$xlim2
     HTML(sprintf("<b>Region Width: %6.1f kb, %3.1f Mb</b>", (r2-r1)/1e3,(r2-r1)/1e6))
   })
   
@@ -172,9 +177,9 @@ function(input, output, session){
   
   #### for smoothing:
   output$bw2 <- renderUI({
-      if(!is.na(input$myrange1) & !is.na(input$myrange2)){
-        r1 <- input$myrange1
-        r2 <- input$myrange2
+      if(!is.na(input$xlim1) & !is.na(input$xlim2)){
+        r1 <- input$xlim1
+        r2 <- input$xlim2
         default.param <- (diff(c(r1,r2)))*0.02 # for default 5%
         numericInput("param2", "Smooth bw (bp):",
                      min=0, value=as.integer(default.param))
@@ -182,8 +187,8 @@ function(input, output, session){
   })
   
   output$bwMess2 <- renderUI({
-    if(!is.na(input$myrange1) & !is.na(input$myrange2) & !is.null(input$param2)){
-    rangeSize <- (input$myrange2-input$myrange1)
+    if(!is.na(input$xlim1) & !is.na(input$xlim2) & !is.null(input$param2)){
+    rangeSize <- (input$xlim2-input$xlim1)
     bwSize <- input$param2
     bwProp <- (bwSize/rangeSize)*100
 	binSize <- rangeSize/input$nbin1
@@ -213,123 +218,143 @@ function(input, output, session){
     # TIER 2 : happens when 'Compute Plots' button is clicked.
     # ######################################################################
 	refreshData  <- reactive({
-    if(input$loadPlot == 0 && input$loadPlot2 == 0) return(NULL)
-    return(isolate({ # everything in this function waits for actionButton() 
-                     # to be selected before executing
-		if (verbose) cat("* In refreshData()\n")
+    
+        if(input$loadPlot == 0 && input$loadPlot2 == 0) return(NULL)
+        return(isolate({ # everything in this function waits for actionButton() 
+                         # to be selected before executing
+    		if (verbose) cat("* In refreshData()\n")
+    
+    		settings <- refreshConfig()
+            cat("\t got config\n")
+    
+    		# re-create data matrix from selectableDataTable input
+    		myfiles <- settings$allDat
+    	
+    		if (is.null(input$o_sampleTable)) {
+    			idx <- 1:nrow(myfiles)
+    		} else if (length(input$o_sampleTable)==1 && input$o_sampleTable==-1) {
+    			idx <- 1:nrow(myfiles)
+    		} else {
+    			tmp <- matrix(input$o_sampleTable,byrow=T,ncol=ncol(myfiles)-1); 
+    			colnames(tmp) <- colnames(myfiles)[-which(colnames(myfiles)=="bigDataURL")]
+    			prefilter_samps <- tmp[,"sampleName"]
+    			idx <- which(myfiles$sampleName %in% prefilter_samps)
+    		}
+    		if (!any(idx)) return("Please select at least 1+ sample using the Sample Selector");
+    
+    		if(length(idx)==1) {tmp <- colnames(myfiles);  myfiles <- as.data.frame(myfiles[idx,]); colnames(myfiles) <- tmp;}
+    		else { myfiles <- myfiles[idx,]}
+    		cat(sprintf("After sample filtering, have %i samples\n", length(idx)))
+    
+            if(length(myfiles$sampleName) != unique(length(myfiles$sampleName))){ cat("There are repeat samples!\n"); browser()}
+    
+           cat("* Read files, bin data, create matrix\n") 
+    	   selRange <- GRanges(input$chrom, IRanges(input$xlim1,input$xlim2))
+    	    
+    	   createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", 
+                       message="Fetching data", type="warning",dismiss=FALSE,append=FALSE)
+    	   print(system.time(dat <- fetchData(session, myfiles=myfiles, selRange=selRange,
+                                            numBins=input$nbin1,
+                                            datatype=settings$configParams$datatype,
+                                            datatypeParams=settings$datatypeParams,
+                                            verbose=verbose)))
+    	   updateProgressBar(session, "load_pBar", visible=FALSE)
+    	   bed <- dat$coords; alldat <- dat$values; rm(dat)
+    
+    		baselineTxt <- ""
+    		if (input$groupBy != "(none)") {
+    			if (input$whichMetric != "normal") {
+    	   			createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg",
+                                   message="Baselining samples", type="warning",dismiss=FALSE,
+                                   append=FALSE)
+            		mygroups <- settings$groupKey[[input$groupBy]]
+    				mygroups <- intersect(mygroups, myfiles[,input$groupBy])
+    				
+    				grp.summ <- computeAverages(myfiles,mygroups,bed,alldat,F,input$groupBy)
+    				cat("\taverage computed\n")
+    				tmp <- baselineSamps(alldat, grp.summ, mygroups, 
+    						input$whichMetric,input$whichBaseline, input$logMe)
+    				alldat <- tmp$alldat; 
+    				logTxt <- "unlogged"; if (input$logMe) logTxt <- "log2"
+    				baselineTxt <- sprintf(": %s:%s (%s)", input$whichMetric, input$whichBaseline, 
+                                           logTxt)
+    			}
+    		}
+    		outdat <- cbind(bed,alldat)
+    
+            myOut <- list(myfiles=myfiles, outdat=outdat,plotTxt=sprintf("%s %s", settings$configParams$name, baselineTxt))
 
-		settings <- refreshConfig()
-        cat("\t got config\n")
-
-		# re-create data matrix from selectableDataTable input
-		myfiles <- settings$allDat
-	
-		if (is.null(input$o_sampleTable)) {
-			idx <- 1:nrow(myfiles)
-		} else if (length(input$o_sampleTable)==1 && input$o_sampleTable==-1) {
-			idx <- 1:nrow(myfiles)
-		} else {
-			tmp <- matrix(input$o_sampleTable,byrow=T,ncol=ncol(myfiles)-1); 
-			colnames(tmp) <- colnames(myfiles)[-which(colnames(myfiles)=="bigDataURL")]
-			prefilter_samps <- tmp[,"sampleName"]
-			idx <- which(myfiles$sampleName %in% prefilter_samps)
-		}
-		if (!any(idx)) return("Please select at least 1+ sample using the Sample Selector");
-
-		if(length(idx)==1) {tmp <- colnames(myfiles);  myfiles <- as.data.frame(myfiles[idx,]); colnames(myfiles) <- tmp;}
-		else { myfiles <- myfiles[idx,]}
-		cat(sprintf("After sample filtering, have %i samples\n", length(idx)))
-
-        if(length(myfiles$sampleName) != unique(length(myfiles$sampleName))){ cat("There are repeat samples!\n"); browser()}
-
-       cat("* Read files, bin data, create matrix\n") 
-	   selRange <- GRanges(input$chrom, IRanges(input$myrange1,input$myrange2))
-	    
-	   createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", message="Fetching data", type="warning",dismiss=FALSE,append=FALSE)
-	   print(system.time(dat <- fetchData(session, myfiles=myfiles, selRange=selRange,numBins=input$nbin1,
-                                        datatype=settings$configParams$datatype,
-                                        datatypeParams=settings$datatypeParams,
-                                        verbose=verbose)))
-	   updateProgressBar(session, "load_pBar", visible=FALSE)
-	   bed <- dat$coords; alldat <- dat$values; rm(dat)
-
-		baselineTxt <- ""
-		if (input$groupBy != "(none)") {
-			if (input$whichMetric != "normal") {
-	   			createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg",message="Baselining samples", type="warning",dismiss=FALSE,append=FALSE)
-        		mygroups <- settings$groupKey[[input$groupBy]]
-				mygroups <- intersect(mygroups, myfiles[,input$groupBy])
-				
-				grp.summ <- computeAverages(myfiles,mygroups,bed,alldat,F,input$groupBy)
-				cat("\taverage computed\n")
-				tmp <- baselineSamps(alldat, grp.summ, mygroups, 
-						input$whichMetric,input$whichBaseline, input$logMe)
-				alldat <- tmp$alldat; 
-				logTxt <- "unlogged"; if (input$logMe) logTxt <- "log2"
-				baselineTxt <- sprintf("%s:%s (%s)", input$whichMetric, input$whichBaseline, logTxt)
-			}
-		}
-		outdat <- cbind(bed,alldat)
-
-        myOut <- list(myfiles=myfiles, outdat=outdat,plotTxt=sprintf("%s: %s", settings$configParams$name, baselineTxt))
-		### 1) myfiles: phenotype table
-		### 2) outdat: data.frame with 3+N columns, where N is number of samples. First three columns are named chrom,start,end.
-		### 3) plotTxt: character for plot title
-		### 4) baselineTxt: title suffix indicating if samples have been baselined. -- OBSOLETE?
-		cat("\tReturning output\n")
-        return(myOut)
-      })) # end of return(isolate()) 
+    		cat("\tReturning output\n")
+            
+            return(myOut)
+    		### 1) myfiles: phenotype table
+    		### 2) outdat: data.frame with 3+N columns, where N is number of samples. First three columns are named chrom,start,end.
+    		### 3) plotTxt: character for plot title
+    		### 4) baselineTxt: title suffix indicating if samples have been baselined. -- OBSOLETE?
+          })) # end of return(isolate()) 
   })
 
   output$scatplot <- renderPlot({ 
-		  while (sink.number() >=1) { sink(NULL)}
-cat("In renderPlot\n")
-  if (is.null(values$lastAction)) return(NULL)
-  if (values$lastAction=="data") return(NULL)
-  if (input$loadPlot==0 & input$loadPlot2 == 0 ) return(NULL)
-updateCollapse(session, id = "main_collapse", multiple=TRUE,close=c("col_activate","col_genomeAnnot","col_sampleSel","col_settings"),open="col_plot")
+    while (sink.number() >=1) { sink(NULL)} # shinyBS seems to open log files. Close these.
+    
+    cat("In renderPlot\n")
+
+    # cases where plot doesn't have all information to load the plot
+    if (is.null(values$lastAction)) return(NULL)
+    if (values$lastAction=="data") return(NULL)
+    if (input$loadPlot==0 & input$loadPlot2 == 0 ) return(NULL)
+    
+    updateCollapse(session, id = "main_collapse", multiple=TRUE,
+                   close="col_activate", open="col_plot")
 
     myOut <- isolate({refreshData()});if(is.null(myOut)) return(NULL)
-	cat("past refreshData\n")
-  	settings <- isolate({refreshConfig()}) # don't change if dataset is selected by button is not pressed.
-	cat("past refreshConfig")
-      if(class(myOut) == "character") return(NULL) # print no graph
-      else{
-    	cat("* Render plot\n")
+
+    cat("past refreshData\n")
+    settings <- isolate({refreshConfig()})  
+    cat("past refreshConfig")
+    
+    if(class(myOut) == "character") return(NULL) # print no graph
+    else{
+        cat("* Render plot\n")
         myfiles <- myOut[["myfiles"]]
         outdat <- myOut[["outdat"]]
-		settings$groupKey[["sampleName"]] <- myfiles$sampleName
-
-		# update available groups based on selected samples.
-		groupKey <- settings$groupKey
-		for (k in names(groupKey)) {
-			x <- groupKey[[k]]
-			#TODO: define behaviour if no items match here
-			groupKey[[k]] <- x[which(x %in% unique(myfiles[,k]))]
-		}
-		#TODO what if groupBy has no entries left?
-		if (input$groupBy !="(none)" && is.null(groupKey[[input$groupBy]])){
-			cat("you haven't decided what to do here, SP")
-		}
-
-		isolate({Smoother2 <- input$param2})
-		isolate({selAnno <- input$anno})
-		closeAlert(session,alertId="alert_statusMsg")
-        
-        mkScat(session, statusId="plot_statusMsg", myfiles=myfiles, outdat = outdat,configParams=settings$configParams,
-                 groupKey=groupKey, groupBy=input$groupBy, 
-				 colorBy=input$colorBy, oCol=input$oCol, 				# color
-				 plotViewType=input$plotType, plotType="smoo2", 		# plot type
-				 param2=Smoother2, 			# errorbar related
-                 whichYlim=input$whichYlim, customYlim=input$customYlim,	# ylim
-				 legd=input$legd,											# legend 
-				 plotTxt=myOut$plotTxt,selAnno=selAnno,
-				 verbose=TRUE
-          )
-
-		updateCollapse(session, id="main_collapse", 
-                       open=c("col_plot", "col_settings"))
+        settings$groupKey[["sampleName"]] <- myfiles$sampleName
+    
+        # update available groups based on selected samples.
+        groupKey <- settings$groupKey
+        for (k in names(groupKey)) {
+            x <- groupKey[[k]]
+            #TODO: define behaviour if no items match here
+            groupKey[[k]] <- x[which(x %in% unique(myfiles[,k]))]
         }
+
+        #TODO what if groupBy has no entries left?
+        if (input$groupBy !="(none)" && is.null(groupKey[[input$groupBy]])){
+            cat("you haven't decided what to do here, SP")
+        }
+    
+        # defer plot refresh if these params change
+        isolate({Smoother2 <- input$param2})
+        isolate({selAnno <- input$anno})
+        isolate({xlim <- c(input$xlim1, input$xlim2)})
+        closeAlert(session,alertId="alert_statusMsg")
+        
+        mkScat(session, statusId="plot_statusMsg", myfiles=myfiles, 
+            outdat = outdat,configParams=settings$configParams,
+            xlim = xlim,
+            groupKey=groupKey, groupBy=input$groupBy, 
+            colorBy=input$colorBy, oCol=input$oCol, 				# color
+            plotViewType=input$plotType, plotType="smoo2", 		# plot type
+            param2=Smoother2, 			# errorbar related
+            whichYlim=input$whichYlim, customYlim=input$customYlim,	# ylim
+            legd=input$legd,											# legend 
+            plotTxt=myOut$plotTxt,selAnno=selAnno,
+            verbose=TRUE
+        )
+    
+        updateCollapse(session, id="main_collapse", 
+        open=c("col_plot", "col_settings"))
+    }
   })
 
 }) # end of shinyServer function

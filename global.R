@@ -27,7 +27,7 @@ html {
 						   
 body {
   margin: 0px;
-  margin-top:120px;
+  margin-top:50px;
   margin-left:10px;
   width:1280px;	
 }
@@ -38,7 +38,7 @@ body {
 	top:0px
 }
 .header {
-	height:120px;
+	height:50px;
 	border:1px solid #CCC;
 	width:1280px;
 	margin: 0px auto;
@@ -70,12 +70,12 @@ body {
   vertical-align: middle;
   cursor: pointer;
   background-image: none;
-  border: 1px solid transparent;
+  border: 3px solid transparent;
   white-space: nowrap;
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  border-radius: 4px;
+  border-radius: 10px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
