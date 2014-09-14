@@ -2387,17 +2387,57 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
 
 	## confidence interval bands
 	if ("a_confint" %in% type) {
-	cat("In a_confint code\n")
 		plot_args[["type"]] <- "a"# we also want to plot mean
 
+   # column-wise SD calculation
+   vectorizedSD <- function(mat) {
+        ssq <- colSums(mat^2)
+        sumel <- colSums(mat)
+        N <- nrow(mat)
+        var <- (1/(N-1))*(ssq - (sumel^2)/N)
+        
+        return(sqrt(var))
+    }
 		my.panel.bands <- function(x, y, upper, lower, fill, col,
 		                           subscripts, ..., font, fontface)
 		{
 		  upper <- upper[subscripts]
 		  lower <- lower[subscripts]
-		  panel.polygon(c(x, rev(x)), c(upper, rev(lower)),
-		                col = fill, border = FALSE,
-		                ...)
+
+          na_idx <- which(is.na(upper))
+          # case 1. there are no error bars to plot at all
+          if (length(na_idx) == length(upper)) {
+                  return(TRUE)
+          # case 2. no missing points
+        } else if (length(na_idx)<1) {
+             panel.polygon(c(x, rev(x)), c(upper,rev(lower)),
+                                col=fill, border=FALSE, ...)
+          # case 3. have complete data with some or no missing points
+          } else {
+              curr_start <-min(which(!is.na(upper)))
+
+              curr_na_pos <- 1
+              while(curr_na_pos < length(na_idx)) {
+                  # complete the current poly
+                  idx <- curr_start:(na_idx[curr_na_pos]-1)
+                  panel.polygon(c(x[idx], rev(x[idx])), c(upper[idx],rev(lower[idx])),
+                                col=fill, border=FALSE, ...)
+                  # contiguous empty spots - skip
+                  while ((na_idx[curr_na_pos + 1] == na_idx[curr_na_pos]+1) && (curr_na_pos < length(na_idx))) {
+                    curr_na_pos <- curr_na_pos + 1
+                  }
+                  # at this point, either we've finished NA spots or the next one is far away. 
+                  # In any case start a poly.
+                  curr_start <- na_idx[curr_na_pos] + 1;  
+              }
+              # there is one last polygon at the end of the view range
+              if (na_idx[length(na_idx)] < length(upper)) {
+                 idx <- curr_start:length(upper)
+                  panel.polygon(c(x[idx], rev(x[idx])), c(upper[idx],rev(lower[idx])),
+                                col=fill, border=FALSE, ...)
+              }
+          }
+
 		}
 
 		fill <- .dpOrDefault(GdObject, "fill")
@@ -2413,20 +2453,21 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
 			outPlot <- NULL
 			mu <- list(); confint <- list()
 			xvals <- position(GdObject)
+
 			# buffer variation to set final limits
 			for (j in seq_along(by)) {
-				#mu[[j]] <- apply(by[[j]],2,mean,na.rm=TRUE)
 				mu[[j]] <- colMeans(by[[j]],na.rm=TRUE)
-				#confint[[j]] <- t(.computeCI(t(by[[j]])))
-				confint[[j]] <- 1.96*(apply(by[[j]],2, sd,na.rm=TRUE)/sqrt(nrow(by[[j]])))
+                locusSD <-   vectorizedSD(by[[j]])
+				confint[[j]] <- 1.96*(locusSD/sqrt(nrow(by[[j]])))
 				curr_low <- mu[[j]]-confint[[j]]
 				curr_high <- mu[[j]]+confint[[j]]
 				minnie <- min(c(minnie, curr_low))
 				maxie <- max(c(maxie, curr_high))
 			}
+
+            names(fill) <- NULL
 			for (j in seq_along(by)) {
 				g <- names(by)[j]
-				#if (is.null(df)) 
 					df <- data.frame(x=position(GdObject), y=mu[[j]], 
 						low=mu[[j]]-confint[[j]], high=mu[[j]]+confint[[j]],groups=factor(g),fill=fill[j])
 
@@ -2451,7 +2492,6 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
 #do.call("panel.xyplot",plot_args)
 				}
 			}
-			cat(sprintf("min=%1.2f, max=%1.2f\n",minnie,maxie))
 				print(outg,newpage=FALSE)
 		} else {
 				mu <- apply(vals,2,mean)
