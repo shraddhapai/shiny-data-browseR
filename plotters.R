@@ -38,7 +38,10 @@ if (verbose) cat("\toutdat successfully reordered\n")
 # defining variables
 if (groupBy=="(none)") {
 	mygroups <- groupKey[["sampleName"]]
-	if (colorBy=="(none)") { colgroups <- groupKey[["sampleName"]]; colorBy <- "sampleName" }
+	if (colorBy=="(none)") { 
+            colgroups <- groupKey[["sampleName"]]; 
+            colorBy <- "sampleName" 
+    }
 	else colgroups <- groupKey[[colorBy]]
 } else {
 	mygroups <- groupKey[[groupBy]]
@@ -58,7 +61,9 @@ if (verbose) cat("\tset up xylim successfully\n")
 
 # colours
 colBase <- suppressWarnings(brewer.pal(length(colgroups)+1,oCol)[-1])
-if (length(colBase) > length(colgroups)) colBase <- colBase[1:length(colgroups)]
+if (length(colBase) > length(colgroups)) {
+        colBase <- colBase[1:length(colgroups)]
+}
 colist <- colBase
 coldiff <- length(colgroups)-length(colist)
 while (coldiff > 0) { 
@@ -133,9 +138,11 @@ if(!groupBy %in% "(none)"){
 	# assign sample colours
 	colist <- colist[match(smpsGrps[,colorBy], names(colist))]
 	
-	if (plotType == "smoo2") outdat <- smooMat(outdat,param2, xvals,1:ncol(outdat))
+	if (plotType == "smoo2") {
+            outdat <- smooMat(outdat,param2, xvals,1:ncol(outdat))
+    }
 	mcols(plot_GR) <- outdat
-	dTrack <- DataTrack(plot_GR, groups=smpsGrps[,"sampleName"],
+	dTrack <- DataTrack(plot_GR, groups=factor(smpsGrps[,"sampleName"],levels=smpsGrps[,"sampleName"]),
 		aggregateGroups=F,type=plotViewType,
 		col=colist,name=configParams[["ylabel"]])
 } 
@@ -181,12 +188,16 @@ if (groupBy == "(none)") {
 if (diff(xlim) > 2e6) {
     xlim_str <- sprintf("%1.1f - %1.1f Mb", xlim[1]/1e6, xlim[2]/1e6)
 } else {
-    xlim_str <- sprintf("%s - %s bp", prettyNum(round(xlim[1]/1e3),big.mark=","), prettyNum(round(xlim[2]/1e3),big.mark=","))
+    xlim_str <- sprintf("%s - %s bp", 
+                        prettyNum(round(xlim[1]/1e3),big.mark=","), 
+                        prettyNum(round(xlim[2]/1e3),big.mark=",")
+                        )
 }
 
 ttl <- sprintf("%s: %s: %s\n%s", plotTxt,setchrom, xlim_str, groupStr)
 createAlert(session, inputId=statusId, alertId="alert_statusMsg", 
-            message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
+            message="Rendering tracks", type="warning",dismiss=FALSE,
+            append=FALSE)
 
 eleft <- max(10,0.1 * diff(xlim))
 

@@ -200,7 +200,7 @@ myscore <- rep(0,nrow(smpsGrps))
 gnames <- names(groupKey)
 for (k in 1:nrow(smpsGrps)) {
 	for (g in 1:length(groupKey)) {
-    cat(sprintf("k=%s\ng=%s\n\n", paste(smpsGrps[k,],collapse=",",sep=","),gnames[g]))
+#    cat(sprintf("k=%s\ng=%s\n\n", paste(smpsGrps[k,],collapse=",",sep=","),gnames[g]))
     idx <- which(groupKey[[g]]==smpsGrps[k,gnames[g]])
     if (!any(idx)) {
       
