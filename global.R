@@ -27,7 +27,7 @@ html {
 						   
 body {
   margin: 0px;
-  margin-top:50px;
+  margin-top:80px;
   margin-left:10px;
   width:1280px;	
 }
@@ -38,7 +38,7 @@ body {
 	top:0px
 }
 .header {
-	height:50px;
+	height:70px;
 	border:1px solid #CCC;
 	width:1280px;
 	margin: 0px auto;

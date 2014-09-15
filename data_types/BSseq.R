@@ -19,7 +19,7 @@ myParams  ##<<(list) format-specific params. For bigwig this is empty and does n
 # minCov - minimum coverage to use
 ) {
 
-  verbose <- TRUE
+  verbose <- FALSE
 	# initialize progress bar
 	updateProgressBar(session, inputId="load_pBar", visible=TRUE,value=0,color="warning",striped=TRUE,animate=F)
 
@@ -35,7 +35,6 @@ out_score <- matrix(nrow=length(bin_GR), ncol=length(tabixFiles))
 
 ctr <- 1
 for(t in tabixFiles) { 
-	cat(sprintf("%s: \n", t))
 	# read tabix.
 	if (verbose) cat("\t scanning\n")
 	t0 <- system.time(tbx <- scanTabix(TabixFile(t),param=bin_GR))
@@ -61,7 +60,7 @@ for(t in tabixFiles) {
 
 		# compute score
 		COV <- sum(rec[idx,COV_POS]); M <- sum(rec[idx,M_POS]);
-		pctM <- M/COV
+		pctM <- (M/COV)*100
 		#if (verbose) cat(sprintf("M = %i ;  Cov=%i ; %%M = %1.1f\n", M, COV, pctM))
 		return(pctM)
 	},mc.cores=4)

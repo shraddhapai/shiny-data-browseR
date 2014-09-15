@@ -22,6 +22,13 @@ configSet <- listConfig() # load config for all datasets
 shinyServer(
 function(input, output, session){
 		cat("In shinyServer\n")
+        createAlert(session, 'welcome_msg',alertId="welcome_alert", 
+                    message=paste(#'<div style="background-color:#2c5B80;height:60px;font-size:16px; color:#c0e4ff; width:1268px;margin-bottom:10px">',
+                        '<span style="font-size:20px;font-style:normal;font-weight:800">Welcome!   </span>',
+                        'Start by selecting a dataset. Click panel titles to expand/collapse. <br>To restart the browse-R, reload this page.',
+                        '',sep=""),
+                    dismiss=TRUE, type="warning")
+
 		updateCollapse(session, id = "main_collapse",  
                        open = "col_plot", close = NULL)
 
@@ -30,7 +37,7 @@ function(input, output, session){
 	values <- reactiveValues()
 	values$lastAction <- NULL
 	observe({if ( input$getData!=0 ) { values$lastAction <- "data"}})
-	observe({if ( input$loadPlot!=0 || input$loadPlot2!=0 ) {values$lastAction <- "plot"}})
+	observe({if ( input$loadPlot | input$loadPlot2 ) {values$lastAction <- "plot"}})
 
 	# tier 0 : shows up when page is loaded.
 	output$pickData <- renderUI({selectInput("dataset", "", names(configSet), width="750px")	})
@@ -44,9 +51,10 @@ function(input, output, session){
 			sep="")
 
    		if (input$getData == 0) return(NULL) # only depends on first button
+        closeAlert(session, alertId="welcome_alert");
 		createAlert(session, inputId="plot_statusMsg", 
                     alertId="alert_statusMsg", message=plot_alertTxt, 
-                    type="info",dismiss=FALSE,append=FALSE)
+                    type="warning",dismiss=TRUE,append=FALSE)
 		updateCollapse(session, id="main_collapse", open="col_settings", 
                        close="col_activate")
 		
@@ -73,21 +81,16 @@ function(input, output, session){
   if (verbose) cat("\tGot by groupBy\n")
 
   output$dataname <- renderUI({
-	blank <- HTML(paste('<div style="height:50px;font-style:italic;color:#c0e4ff;margin-left:10px;margin-top:10px">',
-                        '<span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!</span>',
-                        '<br>The view below is composed of 5 panels. Each panel can be collapsed or expanded by clicking ',
-                        'on the respective titles.<br>Begin data exploration by selecting a dataset in the first panel, ',
-                        '"Select dataset".</div>',sep=""));
    if (input$getData == 0) return(NULL)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
 	fluidRow(
-		column(9,
+		column(8,
 			HTML(paste('<div style="color:#ffffff;font-size:18px;margin-top:10px;margin-left:10px">Active dataset:',
 			sprintf('<span style="color:#ffd357; font-weight:600">%s</span>', settings$configParams[["name"]])),
 			sprintf(': build <span style="color:#ffd357;font-weight:600">%s</span></div>', 
 			settings$configParams[["genomeName"]]),
 			sep="")
-	), 	column(3,HTML(sprintf('<em style="margin-top:10px;color:#ffd357">%i samples available</em>', 
+	), 	column(4,HTML(sprintf('<em style="margin-top:10px;color:#ffd357">%i samples available</em>', 
 		nrow(settings$allDat))))
 	)})
 
@@ -96,12 +99,12 @@ function(input, output, session){
 	blank <- HTML('<div height:50px">&nbsp;</div>');
    if (input$getData == 0) return(blank)
   	settings <- isolate({refreshConfig()}); if (is.null(settings)) return(blank) 
-	fluidRow(
+    outVal <- list(
 		column(8,HTML(sprintf('<div style="margin-left:10px;margin-top:10px"><span style="#ffffff;font-weight:800">Description:  </span><span style="color:#c0e4ff;font-weight:400">%s</span></div>',settings$configParams[["description"]]))),
-		column(1,HTML("")),
-		column(2,HTML(sprintf('<span>Platform/assay:<br><span style="color:#c0e4ff">%s</span></span>', 
+		column(3,HTML(sprintf('<span>Platform/assay:<br><span style="color:#c0e4ff">%s</span></span>', 
 		settings$configParams[['platformName']])))
-	)
+    )
+        return(outVal)
 	})
 
 	output$o_sampleCount <- renderUI({
@@ -219,7 +222,7 @@ function(input, output, session){
     # ######################################################################
 	refreshData  <- reactive({
     
-        if(input$loadPlot == 0 && input$loadPlot2 == 0) return(NULL)
+        if(input$loadPlot<1 & input$loadPlot2<1) return(NULL)
         return(isolate({ # everything in this function waits for actionButton() 
                          # to be selected before executing
     		if (verbose) cat("* In refreshData()\n")
@@ -302,7 +305,7 @@ function(input, output, session){
     # cases where plot doesn't have all information to load the plot
     if (is.null(values$lastAction)) return(NULL)
     if (values$lastAction=="data") return(NULL)
-    if (input$loadPlot==0 & input$loadPlot2 == 0 ) return(NULL)
+    if (input$loadPlot<1 & input$loadPlot2<1 ) return(NULL)
     
     updateCollapse(session, id = "main_collapse", multiple=TRUE,
                    close="col_activate", open="col_plot")

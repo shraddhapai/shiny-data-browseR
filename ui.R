@@ -11,16 +11,6 @@ progressImage <- "images/spinner.gif"
 # UI CONTROL OBJECTS . SEE BELOW for UI layout 
 default.range <- c(27918683,27967413)
 
-HTML_ButtonClickText <-   HTML(paste(
-    '<script type="text/javascript">',
-    '$(document).ready(function() {',
-    '$("#loadPlot").click(function() {',
-    sprintf('$("#scatplot").html(\"<h4>Computing plot.<br>Do not change settings until refresh is complete.</h4><img src=\\"%s\\">\");', progressImage),
-    '});',
-    '});',
-    '</script>',
-sep=""))
-
 # #############################################################
 # WELL PANELS (Plot settings and genome annotation)
 # #############################################################
@@ -74,7 +64,7 @@ style="border:1px inset;border-color:#458cc3;background-color:#ffffff",
     	column(6,uiOutput("o_colorBy")),
     	column(6, selectInput("oCol", 
                               "Colour Scheme:", 
-                              rownames(brewer.pal.info),"Dark2")
+                              rownames(brewer.pal.info),"Spectral")
         )  
     ),
   	selectInput("whichYlim","Y-axis:", 
@@ -98,22 +88,21 @@ suppressWarnings(shinyUI(fluidPage(
   # main header showing title
   HTML('<div class="pagebar-col">'),
   fluidRow(
-  	column(11, HTML('<a href="https://github.com/shraddhapai/shiny-data-browseR"><img src="images/title.png", width=400></a>')
+  	column(11, 
+        HTML('<a href="https://github.com/shraddhapai/shiny-data-browseR"><img src="images/title.png", width=380></a>'),
+        HTML('<span style="font-style:normal;font-size:14;vertical-align:-10px;align:left;font-weight:normal">The statistical browser for population ( and other ) genomics</span>')
     ),
     column(1,
   		conditionalPanel("input.getData>0",
   		shiny::tags$button(id="loadPlot2", type="button",
     	class="btn action-button btn-success", 
-      HTML('<img src="images/refresh.png" style="width:20px;height:20px">'))
-    ))
+      HTML('<img src="images/refresh.png" style="width:20px;height:20px;align:right">'))
+    ))  
   ),
+  HTML('Version: <span style="color:#ffd357">EDB beta 1.1</span>'),
   HTML('</div>'),
   HTML('</div>'),
-  HTML(paste('<div class="pagebar-col2" style="height:60px;font-size:16px; color:#c0e4ff; width:1268px;margin-bottom:10px">',
-                        '<span style="font-size:20px;font-style:normal;color:#ffd357;font-weight:800">Welcome!   </span>',
-                        'Start by selecting a dataset. To restart the browse-R, reload this page.<br>Click panel titles to expand/collapse. ',
-                        '</div>',sep="")),
-  HTML_ButtonClickText,
+  bsAlert('welcome_msg'),
     
     # #############################################################
     # COLLAPSIBLE PANELS
@@ -121,7 +110,7 @@ suppressWarnings(shinyUI(fluidPage(
     bsCollapse(multiple=TRUE, open="col_activate",id="main_collapse",
 
        bsCollapsePanel(title="Choose dataset",
-    	HTML('<div style="height:100px">'),
+    	HTML('<div style="height:200px">'),
   		HTML('<h4 class="text-primary" style="margin-bottom:0px;">Select a dataset. Then click "Make active dataset".</h4>&nbsp;<br>'),
   		fluidRow(
     	column(7,uiOutput("pickData")),
@@ -137,15 +126,14 @@ suppressWarnings(shinyUI(fluidPage(
     		conditionalPanel("input.getData>0",
                HTML('<div class="pagebar-col2">'),
                uiOutput("dataname"),
-               uiOutput("data_desc"),
                fluidRow(
-                        column(11,HTML("")
-                        ),column(1,
+                  uiOutput("data_desc"),
+                  column(1,
                             shiny::tags$button(id="loadPlot", type="button",
                             class="btn action-button btn-success", 
                             HTML('<img src="images/refresh.png" "style:width=10px;height:10px">')
-                        ))
-                        ),
+                        )
+               )),
                HTML("</div>"),
                bsAlert(inputId="plot_statusMsg"),
                  bsProgressBar("load_pBar", value=0,
@@ -221,7 +209,12 @@ suppressWarnings(shinyUI(fluidPage(
     bsTooltip("whichYlim", 
               "Select if y-axis should have default or custom limits",
               "right"),
-    HTML('<h4>For code, technical documentation, and user manual, visit <a href="https://github.com/shraddhapai/shiny-data-browseR">EDB @ github</a></h4>'),
-    
+    fluidRow(
+     column(7,
+        HTML('<h4>For code, technical documentation, and user manual, visit <a href="https://github.com/shraddhapai/shiny-data-browseR">EDB @ github</a></h4>')
+    ), column(1,HTML("")
+    ), column(4,
+    HTML('<h5 style="text-align:right">Report bugs to: Shraddha | dot | Pai | at | camh | dot | ca</h5>')
+    )),
     HTML('<div class="panel-footer">Copyright &copy; 2014. Shraddha Pai, Centre for Addiction and Mental Health. This software is distributed with the GPLv3 license.<br>This page is best viewed at 1280 x 1024 or better, and has been tested in Firefox 31.0 and Chrome 37.0 </div>')
     )))

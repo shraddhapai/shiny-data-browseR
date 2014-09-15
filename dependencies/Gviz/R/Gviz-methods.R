@@ -2398,6 +2398,7 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
         
         return(sqrt(var))
     }
+          debugMode <- FALSE
 		my.panel.bands <- function(x, y, upper, lower, fill, col,
 		                           subscripts, ..., font, fontface)
 		{
@@ -2407,31 +2408,38 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
           na_idx <- which(is.na(upper))
           # case 1. there are no error bars to plot at all
           if (length(na_idx) == length(upper)) {
+                  if (debugMode) cat("\t Case 1: all empty. returning\n")
                   return(TRUE)
           # case 2. no missing points
         } else if (length(na_idx)<1) {
+                  if (debugMode) cat("\t Case 2: one continuous polygon\n")
              panel.polygon(c(x, rev(x)), c(upper,rev(lower)),
                                 col=fill, border=FALSE, ...)
           # case 3. have complete data with some or no missing points
           } else {
               curr_start <-min(which(!is.na(upper)))
+                if (debugMode) cat(sprintf("\t Case 3: %i of %i NA\n", length(na_idx), length(upper)))
 
               curr_na_pos <- 1
-              while(curr_na_pos < length(na_idx)) {
+              while(curr_na_pos <= length(na_idx)) {
+                      if (debugMode) cat(sprintf("\t\tcurr_na_pos = %i, na_idx length= %i\n", curr_na_pos, length(na_idx)))
                   # complete the current poly
                   idx <- curr_start:(na_idx[curr_na_pos]-1)
                   panel.polygon(c(x[idx], rev(x[idx])), c(upper[idx],rev(lower[idx])),
                                 col=fill, border=FALSE, ...)
                   # contiguous empty spots - skip
                   while ((na_idx[curr_na_pos + 1] == na_idx[curr_na_pos]+1) && (curr_na_pos < length(na_idx))) {
+                      if (debugMode) cat(sprintf("\t\ttight-loop:curr_na_pos = %i\n", curr_na_pos))
                     curr_na_pos <- curr_na_pos + 1
                   }
                   # at this point, either we've finished NA spots or the next one is far away. 
-                  # In any case start a poly.
+                  # In any case start a poly and move to the next NA spot
                   curr_start <- na_idx[curr_na_pos] + 1;  
+                  curr_na_pos <- curr_na_pos + 1
               }
               # there is one last polygon at the end of the view range
               if (na_idx[length(na_idx)] < length(upper)) {
+                      if (debugMode) cat("\tWrapping last polygon\n")
                  idx <- curr_start:length(upper)
                   panel.polygon(c(x[idx], rev(x[idx])), c(upper[idx],rev(lower[idx])),
                                 col=fill, border=FALSE, ...)
@@ -2468,6 +2476,7 @@ setMethod("drawGD", signature("DataTrack"), function(GdObject, minBase, maxBase,
             names(fill) <- NULL
 			for (j in seq_along(by)) {
 				g <- names(by)[j]
+             if (debugMode) print(g)
 					df <- data.frame(x=position(GdObject), y=mu[[j]], 
 						low=mu[[j]]-confint[[j]], high=mu[[j]]+confint[[j]],groups=factor(g),fill=fill[j])
 

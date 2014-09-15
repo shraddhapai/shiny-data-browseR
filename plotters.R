@@ -51,8 +51,6 @@ if(whichYlim == "def"){
 	tmp <- na.omit(as.numeric(tmp_mat)); myYlim <- quantile(tmp,c(0.005,0.99)); 
 } else myYlim <- customYlim
 
-print("Ylim\n")
-print(myYlim)
 bw <- param2
 xvals <- outdat$start
 
@@ -189,6 +187,8 @@ createAlert(session, inputId=statusId, alertId="alert_statusMsg",
             message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
 
 eleft <- max(10,0.1 * diff(xlim))
+ save(finalTracks,file="~/Documents/Gviz_debug_tracks.rda")
+
 t0 <- system.time(
 	plotTracks(finalTracks, sizes=sizes,
 		min.width=1, extend.left=eleft, lwd=2,
