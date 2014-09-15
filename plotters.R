@@ -187,7 +187,6 @@ createAlert(session, inputId=statusId, alertId="alert_statusMsg",
             message="Rendering tracks", type="warning",dismiss=FALSE,append=FALSE)
 
 eleft <- max(10,0.1 * diff(xlim))
- save(finalTracks,file="~/Documents/Gviz_debug_tracks.rda")
 
 t0 <- system.time(
 	plotTracks(finalTracks, sizes=sizes,
