@@ -147,7 +147,8 @@ if(!groupBy %in% "(none)"){
 cat("setting display track\n")
 displayPars(dTrack)  <- list(
 	cex.title=1.5,background.title='cyan4', 
-	baseline=0, col.baseline='gray20',lty.baseline=3,legend=legd,cex.axis=1.5,lwd=2,
+	baseline=0, col.baseline='gray20',lty.baseline=1,
+    legend=legd,cex.axis=1.5,lwd=2,
 	col.grid='gray50',lty.grid=3,cex=1,pch=20, cex.legend=1.3,
 	grid=TRUE,ylim=myYlim
 	)
@@ -180,7 +181,7 @@ if (groupBy == "(none)") {
 if (diff(xlim) > 2e6) {
     xlim_str <- sprintf("%1.1f - %1.1f Mb", xlim[1]/1e6, xlim[2]/1e6)
 } else {
-    xlim_str <- sprintf("%s - %s bp", prettyNum(xlim[1]/1e3,big.mark=","), prettyNum(xlim[2]/1e3,big.mark=","))
+    xlim_str <- sprintf("%s - %s bp", prettyNum(round(xlim[1]/1e3),big.mark=","), prettyNum(round(xlim[2]/1e3),big.mark=","))
 }
 
 ttl <- sprintf("%s: %s: %s\n%s", plotTxt,setchrom, xlim_str, groupStr)
@@ -249,7 +250,7 @@ print(system.time(trackList <- foreach (k=1:nrow(dat)) %dopar% {
 			x
 		}, 
 		GeneRegionTrack={
-			if ((end(selGR)-start(selGR)) < 3e5) { 
+			if ((end(selGR)-start(selGR)) < 4e5) { 
 				viewOpt <- curr$defaultView; showDetail <- TRUE
 			} else {
 				viewOpt <- "dense"; showDetail <- FALSE

@@ -9,7 +9,7 @@ progressImage <- "images/spinner.gif"
 
 #############################
 # UI CONTROL OBJECTS . SEE BELOW for UI layout 
-default.range <- c(10483022,10725218)
+default.range <- c(10483022,10825218)
 
 # #############################################################
 # WELL PANELS (Plot settings and genome annotation)
