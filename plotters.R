@@ -157,14 +157,15 @@ createAlert(session, inputId=statusId, alertId="alert_statusMsg",
             message="Fetching annotation", type="warning",dismiss=FALSE,append=FALSE)
 cat("* About to get anno\n")
 sizes <- c(0.05,0.18,1.0)
+finalTracks <- list(itrack, gtrack, dTrack)
 if (!is.null(selAnno)) {
 	cat("\t* Collecting annotation tracks\n")
 	annoTracks <- getAnnoTracks(configParams$annoConfig, selAnno,
                                 GRanges(setchrom,IRanges(xlim[1],xlim[2])),configParams$genomeName)
-	finalTracks <- list(itrack,gtrack, dTrack, annoTracks$tracks)
+    cat("GOt out of getAnnoTracks\n")
+	finalTracks <- c( finalTracks, annoTracks[["tracks"]])
+    cat("Made finalTracks\n")
 	sizes <- c(sizes, annoTracks$sizes)
-} else {
-    finalTracks <- list(itrack,gtrack,dTrack)
 }
 
 # Create plot title string
@@ -188,6 +189,7 @@ createAlert(session, inputId=statusId, alertId="alert_statusMsg",
 
 eleft <- max(10,0.1 * diff(xlim))
 
+cat("about to call plotTracks\n")
 t0 <- system.time(
 	plotTracks(finalTracks, sizes=sizes,
 		min.width=1, extend.left=eleft, lwd=2,
