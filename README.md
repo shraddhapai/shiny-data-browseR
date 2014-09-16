@@ -1,11 +1,13 @@
-Welcome to the repo for the **Epigenome Data Browse-R (EDB)**, an interactive statistical explorer for population (but also other) genomics.
+Welcome to the project page for the **Epigenome Data Browse-R (EDB)**, an interactive statistical explorer for population (but also other) genomics.
 
-#### For documentation visit  http://shiny-genome-browse-r.readthedocs.org/en/latest/.
+#### Start by seeing the [Quick Tour screencast] (https://www.youtube.com/watch?v=sv68ftm71R4).
 
-#### For an online demo, visit http://edb.intangiblearts.org/
-_(faster data fetch, but on an Amazon spot instance which may occasionally be unavailable)_
+#### Try out the [live demo] (http://edb.intangiblearts.org).
 
-An EDB demo is expected to be hosted at the CAMH in September 2014. Stay tuned!
+#### [Install EDB on your local machine] (http://shiny-genome-browse-r.readthedocs.org/en/latest/install/).
 
-_Shraddha Pai, 3 September 2014_
+##### [Check out the documentation and user manual] (http://shiny-genome-browse-r.readthedocs.org/en/latest).
+
+Finally, contact *Shraddha Pai [at] camh [dot] ca* with general feedback, bug reports or feature requests.
+
 
