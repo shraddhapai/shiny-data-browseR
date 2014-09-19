@@ -99,7 +99,13 @@ suppressWarnings(shinyUI(fluidPage(
       HTML('<img src="images/refresh.png" style="width:20px;height:20px;align:right">'))
     ))  
   ),
-  HTML('Version: <span style="color:#ffd357">EDB beta 1.1</span>'),
+  fluidRow(
+   column(9,
+          HTML('Version: <span style="color:#ffd357">EDB beta 1.1</span>')
+   ),
+   column(3,
+          HTML('<span style="font-weight:800;font-size:16px;color:#ffd357">New!  <a href="https://www.youtube.com/watch?v=sv68ftm71R4" style="text-decoration:underline;color:#ffffff">"Quick Tour" screencast!</a>') 
+   )),
   HTML('</div>'),
   HTML('</div>'),
   bsAlert('welcome_msg'),
