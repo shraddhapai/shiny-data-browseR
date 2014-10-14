@@ -156,6 +156,15 @@ function(input, output, session){
 		outdat <- myout[["outdat"]]
 		tmp <- na.omit(as.numeric(as.matrix(outdat[,-(1:3)]))); 
 		values <- c(quantile(tmp,c(0.005,0.995)),min(tmp),max(tmp))
+        if (values[4]-values[3] < 1e-2) { # tiny range
+                if (values[3] < 0) { # negative, zero to be above
+                    values  <- c(values[1]-1e2, 0, values[1]-1e2,0)
+                } else if (values == 0) {
+                    values  <- c(-1,1,-1,1)
+                } else {
+                    values  <- c(0,values[1]+1e2,0,values[1]+ 1e2) 
+                }
+        }
 	}
 	print(values)
 	sliderInput("customYlim", "Custom y-range", value=values[1:2],min=values[3],max=values[4])
@@ -252,8 +261,9 @@ function(input, output, session){
             if(length(myfiles$sampleName) != unique(length(myfiles$sampleName))){ cat("There are repeat samples!\n"); browser()}
     
            cat("* Read files, bin data, create matrix\n") 
-    	   selRange <- GRanges(input$chrom, IRanges(input$xlim1,input$xlim2))
-    	    
+    	   selRange <- GRanges(input$chrom, 
+                               IRanges(input$xlim1,input$xlim2))
+    	   cat("made range")  
     	   createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg", 
                        message="Fetching data", type="warning",dismiss=FALSE,append=FALSE)
     	   print(system.time(dat <- fetchData(session, myfiles=myfiles, selRange=selRange,
@@ -261,6 +271,7 @@ function(input, output, session){
                                             datatype=settings$configParams$datatype,
                                             datatypeParams=settings$datatypeParams,
                                             verbose=verbose)))
+           cat("Fetched data\n")
     	   updateProgressBar(session, "load_pBar", visible=FALSE)
     	   bed <- dat$coords; alldat <- dat$values; rm(dat)
     
@@ -277,6 +288,15 @@ function(input, output, session){
     				cat("\taverage computed\n")
     				tmp <- baselineSamps(alldat, grp.summ, mygroups, 
     						input$whichMetric,input$whichBaseline, input$logMe)
+                    if (class(tmp)=="integer") {
+                        updateCollapse(session, id="main_collapse",
+                              open="col_plot")
+                        createAlert(session, inputId="plot_statusMsg", alertId="alert_statusMsg",
+                              message="No samples from baseline group selected. Either change baselining options or select appropriate samples.",
+                              type="error",append=FALSE
+                              )
+                        return(NULL)
+                    }
     				alldat <- tmp$alldat; 
     				logTxt <- "unlogged"; if (input$logMe) logTxt <- "log2"
     				baselineTxt <- sprintf(": %s:%s (%s)", input$whichMetric, input$whichBaseline, 
@@ -285,7 +305,8 @@ function(input, output, session){
     		}
     		outdat <- cbind(bed,alldat)
     
-            myOut <- list(myfiles=myfiles, outdat=outdat,plotTxt=sprintf("%s %s", settings$configParams$name, baselineTxt))
+            myOut <- list(myfiles=myfiles, outdat=outdat,
+                          plotTxt=sprintf("%s %s", settings$configParams$name, baselineTxt))
 
     		cat("\tReturning output\n")
             
@@ -352,9 +373,7 @@ function(input, output, session){
             whichYlim=input$whichYlim, customYlim=input$customYlim,	# ylim
             legd=input$legd,											# legend 
             plotTxt=myOut$plotTxt,selAnno=selAnno,
-            verbose=TRUE
-        )
-    
+            verbose=TRUE)    
         updateCollapse(session, id="main_collapse", 
         open=c("col_plot", "col_settings"))
     }

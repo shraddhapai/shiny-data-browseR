@@ -155,9 +155,13 @@ whichMetric, 	##<<(character) which metric to compute for sample-wise data;  opt
 whichBaseline,	##<<(character) group for baseline (for logratio_baseline option)
 logMe			##<<(logical) log-transform?
 ) {
-if (whichMetric=="ratio_baseline") 
-	mybase <- grp.summ[,sprintf("%s.mean",whichBaseline)]
-else 
+if ( grep(whichMetric, "ratio_baseline", fixed=TRUE) ) { 
+    if (! whichBaseline %in% mygroups ){
+        return(-1L) 
+    } else {
+	    mybase <- grp.summ[,sprintf("%s.mean",whichBaseline)]
+    }
+} else 
 	mybase <- rowMeans(alldat,na.rm=T)
 
 alldat <- alldat/mybase

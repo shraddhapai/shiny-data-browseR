@@ -86,7 +86,14 @@ if(!groupBy %in% "(none)"){
 	if (is.null(mygroups)) return(NULL)
 	if (plotViewType=="l") plotViewType <- "a" # when grouping, we want to show the mean
 	
-	outdat <- outdat[,-(1:2)]
+    if (ncol(outdat) == 3) { # single sample selected 
+        tmp_name    <- colnames(outdat)[3]
+        outdat      <- outdat[,-(1:2)]
+        outdat      <- as.matrix(outdat)
+        colnames(outdat) <- tmp_name
+    } else {
+	    outdat <- outdat[,-(1:2)]
+    }
 	
 	# set colour and fill
 	filldat <- colist
@@ -154,7 +161,7 @@ if(!groupBy %in% "(none)"){
 cat("setting display track\n")
 displayPars(dTrack)  <- list(
 	cex.title=1.5,background.title='cyan4', 
-	baseline=0, col.baseline='gray20',lty.baseline=1,
+	#baseline=0, col.baseline='gray20',lty.baseline=1,
     legend=legd,cex.axis=1.5,lwd=2,
 	col.grid='gray50',lty.grid=3,cex=1,pch=20, cex.legend=1.3,
 	grid=TRUE,ylim=myYlim
