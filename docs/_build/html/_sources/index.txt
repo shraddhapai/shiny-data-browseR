@@ -12,7 +12,7 @@
 Epigenome Data Browse-R: an interactive statistical browser for population genomics
 ====================================================================================
 
-Visit the `online demo <http://edb.intangiblearts.org>`_
+Visit the `online demo <http://epidatabrowser.camh.ca:3838/EDB>`_
 ------------------------------------------------------------------
 Get **source code** from the  `EDB github repo <https://github.com/shraddhapai/shiny-data-browseR>`_.
 

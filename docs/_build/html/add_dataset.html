@@ -56,8 +56,14 @@
 </div>
 <div class="section" id="add-a-dataset">
 <h1>2. Add a dataset<a class="headerlink" href="#add-a-dataset" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="quickstart-use-demo-datasets">
+<h2>2.1. Quickstart: Use demo datasets<a class="headerlink" href="#quickstart-use-demo-datasets" title="Permalink to this headline">¶</a></h2>
+<p>Download the demo datasets seen on the live EDB demo. Follow install instructions in the included <tt class="docutils literal"><span class="pre">README</span></tt>.</p>
+<p><strong>File:</strong> <a class="reference external" href="http://epidatabrowser.camh.ca:3838/demo_datasets/Shiny_BrowseR_Github_data.tar.gz">Shiny_BrowseR_Github_data.tar.gz</a> (size: 369M)</p>
+<p><strong>md5sum:</strong> <tt class="docutils literal"><span class="pre">e8a0a07876bd9ae5464004ac41740760</span></tt></p>
+</div>
 <div class="section" id="basic-steps">
-<h2>2.1. Basic steps<a class="headerlink" href="#basic-steps" title="Permalink to this headline">¶</a></h2>
+<h2>2.2. Basic steps<a class="headerlink" href="#basic-steps" title="Permalink to this headline">¶</a></h2>
 <p>Follow these steps to add a new dataset to the EDB. As an example, we use the demo BS-seq dataset from Lister, Mukamel et al. (2013). Science, which charts DNA methylation over human postnatal brain development.</p>
 <p>Let us assume that EDB datasets are all located at <tt class="docutils literal"><span class="pre">&lt;dataRoot&gt;</span></tt>.</p>
 <p><strong>Step 1: dataset config:</strong> Create a <a class="reference internal" href="#add-data-config"><em>master config file</em></a> for the dataset.</p>
@@ -66,7 +72,7 @@
 <p><strong>Step 4: group order:</strong> Add a file to specify the <a class="reference internal" href="#add-data-grouping"><em>ordering of categorical variables</em></a></p>
 </div>
 <div class="section" id="example-directory-structure-for-datasets">
-<h2>2.2. Example directory structure for datasets<a class="headerlink" href="#example-directory-structure-for-datasets" title="Permalink to this headline">¶</a></h2>
+<h2>2.3. Example directory structure for datasets<a class="headerlink" href="#example-directory-structure-for-datasets" title="Permalink to this headline">¶</a></h2>
 <p id="add-data-exampledir">This is what a simple project directory structure should look like when you are done. The example below assumes that all datasets and associated config files are located at <tt class="docutils literal"><span class="pre">&lt;dataRoot&gt;</span></tt>. Coloured arrows show how the master config file references the phenotype table and group order table</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/dataset_anatomy.png"><img alt="Conceptual view of project directory" src="_images/dataset_anatomy.png" style="width: 900px;" /></a>
@@ -100,10 +106,10 @@
 </div>
 </div>
 <div class="section" id="dataset-config-file">
-<h2>2.3. Dataset config file<a class="headerlink" href="#dataset-config-file" title="Permalink to this headline">¶</a></h2>
+<h2>2.4. Dataset config file<a class="headerlink" href="#dataset-config-file" title="Permalink to this headline">¶</a></h2>
 <p id="add-data-config">The dataset config file contains general metadata for the dataset. It is a tab-delimited file with two columns: a key (controlled word for config parameter) and value.</p>
 <div class="section" id="required-fields">
-<h3>2.3.1. Required fields<a class="headerlink" href="#required-fields" title="Permalink to this headline">¶</a></h3>
+<h3>2.4.1. Required fields<a class="headerlink" href="#required-fields" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">name</span></tt>: Dataset name; human-readable (~70 char)</li>
 <li><tt class="docutils literal"><span class="pre">description</span></tt>: Brief description of dataset; human-readable (~170 char)</li>
@@ -121,18 +127,18 @@
 <p>Separately, there may be datatype-specific config parameters.</p>
 </div>
 <div class="section" id="bigwig">
-<h3>2.3.2. bigwig<a class="headerlink" href="#bigwig" title="Permalink to this headline">¶</a></h3>
+<h3>2.4.2. bigwig<a class="headerlink" href="#bigwig" title="Permalink to this headline">¶</a></h3>
 <p>This datatype has no required parameters.</p>
 </div>
 <div class="section" id="bsseq">
-<h3>2.3.3. BSseq<a class="headerlink" href="#bsseq" title="Permalink to this headline">¶</a></h3>
+<h3>2.4.3. BSseq<a class="headerlink" href="#bsseq" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">BSseq__COV_POS</span></tt>: Column index of tabix file which contains base coverage</li>
 <li><tt class="docutils literal"><span class="pre">BSseq__M_POS</span></tt>: Column index of tabix file which contains number of methylated reads at that base (&#8220;M&#8221; read count)</li>
 </ul>
 </div>
 <div class="section" id="example-config-file">
-<h3>2.3.4. Example config file<a class="headerlink" href="#example-config-file" title="Permalink to this headline">¶</a></h3>
+<h3>2.4.4. Example config file<a class="headerlink" href="#example-config-file" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre># REQUIRED: MAIN config flags --- must be in all datasets
 # ----------------------------------------------
 name    Human brain development methylome (base-resolution BS-seq)
@@ -163,11 +169,11 @@ BSseq__M_POS    5
 </div>
 </div>
 <div class="section" id="sample-phenotype-table">
-<h2>2.4. Sample phenotype table<a class="headerlink" href="#sample-phenotype-table" title="Permalink to this headline">¶</a></h2>
+<h2>2.5. Sample phenotype table<a class="headerlink" href="#sample-phenotype-table" title="Permalink to this headline">¶</a></h2>
 <p id="add-data-pheno">This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
 The browser expects the following columns, named exactly in this way:</p>
 <div class="section" id="required-columns">
-<h3>2.4.1. Required columns<a class="headerlink" href="#required-columns" title="Permalink to this headline">¶</a></h3>
+<h3>2.5.1. Required columns<a class="headerlink" href="#required-columns" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>sampleName:</li>
 <li>bigDataURL: Location of data file</li>
@@ -175,7 +181,7 @@ The browser expects the following columns, named exactly in this way:</p>
 </ul>
 </div>
 <div class="section" id="example-sample-phenotype-table">
-<h3>2.4.2. Example sample phenotype table<a class="headerlink" href="#example-sample-phenotype-table" title="Permalink to this headline">¶</a></h3>
+<h3>2.5.2. Example sample phenotype table<a class="headerlink" href="#example-sample-phenotype-table" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>sampleName  Age_Group   Cell_Type   Bank_ID Sex bigDataURL
 Human_35_do Early Childhood Tissue  UMB 759 M   /My_Shiny_DataDir/data/GSM116700
 4_allC.MethylC-Seq_hs_mfg_35do.chr1.txt.gz
@@ -193,7 +199,7 @@ HUES6   Immortal    ESC -   F   /My_Shiny_DataDir/data/GSM1173778_allC.MethylC-S
 </div>
 </div>
 <div class="section" id="groups-and-grouping-order">
-<h2>2.5. Groups and grouping order<a class="headerlink" href="#groups-and-grouping-order" title="Permalink to this headline">¶</a></h2>
+<h2>2.6. Groups and grouping order<a class="headerlink" href="#groups-and-grouping-order" title="Permalink to this headline">¶</a></h2>
 <p id="add-data-grouping">The <tt class="code docutils literal"><span class="pre">group_order.txt</span></tt> file is a tab-delimited file containing a table of two columns:
 #. groupID: Group name, must match a column name in the phenotype matrix
 #. groupOrder: Order in which group members must be shown. Comma-separated collection of values. <strong>All values for a given group must be specified here. The browser will return an error if any additional group members are found in the phenotype table but are not listed here.</strong></p>
@@ -268,21 +274,22 @@ sed -i &#39;s/\/src\/path\/dir/\/dest\/path/g&#39; anno_config.txt
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">2. Add a dataset</a><ul>
-<li><a class="reference internal" href="#basic-steps">2.1. Basic steps</a></li>
-<li><a class="reference internal" href="#example-directory-structure-for-datasets">2.2. Example directory structure for datasets</a></li>
-<li><a class="reference internal" href="#dataset-config-file">2.3. Dataset config file</a><ul>
-<li><a class="reference internal" href="#required-fields">2.3.1. Required fields</a></li>
-<li><a class="reference internal" href="#bigwig">2.3.2. bigwig</a></li>
-<li><a class="reference internal" href="#bsseq">2.3.3. BSseq</a></li>
-<li><a class="reference internal" href="#example-config-file">2.3.4. Example config file</a></li>
+<li><a class="reference internal" href="#quickstart-use-demo-datasets">2.1. Quickstart: Use demo datasets</a></li>
+<li><a class="reference internal" href="#basic-steps">2.2. Basic steps</a></li>
+<li><a class="reference internal" href="#example-directory-structure-for-datasets">2.3. Example directory structure for datasets</a></li>
+<li><a class="reference internal" href="#dataset-config-file">2.4. Dataset config file</a><ul>
+<li><a class="reference internal" href="#required-fields">2.4.1. Required fields</a></li>
+<li><a class="reference internal" href="#bigwig">2.4.2. bigwig</a></li>
+<li><a class="reference internal" href="#bsseq">2.4.3. BSseq</a></li>
+<li><a class="reference internal" href="#example-config-file">2.4.4. Example config file</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sample-phenotype-table">2.4. Sample phenotype table</a><ul>
-<li><a class="reference internal" href="#required-columns">2.4.1. Required columns</a></li>
-<li><a class="reference internal" href="#example-sample-phenotype-table">2.4.2. Example sample phenotype table</a></li>
+<li><a class="reference internal" href="#sample-phenotype-table">2.5. Sample phenotype table</a><ul>
+<li><a class="reference internal" href="#required-columns">2.5.1. Required columns</a></li>
+<li><a class="reference internal" href="#example-sample-phenotype-table">2.5.2. Example sample phenotype table</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#groups-and-grouping-order">2.5. Groups and grouping order</a></li>
+<li><a class="reference internal" href="#groups-and-grouping-order">2.6. Groups and grouping order</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#adding-demo-datasets">3. Adding demo datasets</a></li>

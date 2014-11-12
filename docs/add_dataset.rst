@@ -8,6 +8,15 @@
 Add a dataset
 ========================
 
+Quickstart: Use demo datasets
+-----------------------------
+
+Download the demo datasets seen on the live EDB demo. Follow install instructions in the included ``README``.
+
+**File:** `Shiny_BrowseR_Github_data.tar.gz <http://epidatabrowser.camh.ca:3838/demo_datasets/Shiny_BrowseR_Github_data.tar.gz>`_ (size: 369M)
+
+**md5sum:** ``e8a0a07876bd9ae5464004ac41740760``
+
 Basic steps
 -------------
 
