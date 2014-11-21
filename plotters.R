@@ -99,6 +99,7 @@ if(!groupBy %in% "(none)"){
 	filldat <- colist
 	if ("a_confint" %in% plotViewType){
 		source("makeColorLighter.R")
+		plotViewType	<- c("a","confint")
 		filldat <- sapply(colist, makeColorLighter)
 	} 
 	
