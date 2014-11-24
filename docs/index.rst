@@ -16,9 +16,6 @@ Visit the `online demo <http://epidatabrowser.camh.ca:3838/EDB>`_
 ------------------------------------------------------------------
 Get **source code** from the  `EDB github repo <https://github.com/shraddhapai/shiny-data-browseR>`_.
 
-:message:`This documentation is under active development. This message will be removed when the first round of revisions is nearly complete. ETA: Early October 2014. -- Shraddha Pai, 5 September 2014.`
-
-**Manual sections**
 
 .. toctree::
    :maxdepth: 2 

@@ -13,16 +13,18 @@ Quickstart: Use demo datasets
 
 Download the demo datasets seen on the live EDB demo. Follow install instructions in the included ``README``.
 
-**File:** `Shiny_BrowseR_Github_data.tar.gz <http://epidatabrowser.camh.ca:3838/demo_datasets/Shiny_BrowseR_Github_data.tar.gz>`_ (size: 369M)
+**File:** `EDB_demodata.tar.gz <http://epidatabrowser.camh.ca:3838/demo_datasets/EDB_demodata.tar.gz>`_ (270Mb)
 
-**md5sum:** ``e8a0a07876bd9ae5464004ac41740760``
+**md5sum:** ``d529107a0ac482f4d39f70ea0e7546aa``
+
+**Note:** If you installed EDB using the custom dockerfile, you already have the demo data. 
 
 Basic steps
 -------------
 
 Follow these steps to add a new dataset to the EDB. As an example, we use the demo BS-seq dataset from Lister, Mukamel et al. (2013). Science, which charts DNA methylation over human postnatal brain development.
 
-Let us assume that EDB datasets are all located at ``<dataRoot>``.
+Let us assume that EDB datasets are all located at ``<dataRoot>``. 
 
 **Step 1: dataset config:** Create a :ref:`master config file <add-data-config>` for the dataset.
 
@@ -38,7 +40,7 @@ Example directory structure for datasets
 
 .. _add-data-exampledir:
 
-This is what a simple project directory structure should look like when you are done. The example below assumes that all datasets and associated config files are located at ``<dataRoot>``. Coloured arrows show how the master config file references the phenotype table and group order table 
+This is what a simple project directory structure should look like when you are done. The example below assumes that all datasets and associated config files are located at ``<dataRoot>``. Coloured arrows show how the master config file references the phenotype table and group order table.
 
 .. figure:: images/dataset_anatomy.png
 	:width:	900px
@@ -80,35 +82,60 @@ Dataset config file
 
 The dataset config file contains general metadata for the dataset. It is a tab-delimited file with two columns: a key (controlled word for config parameter) and value.
 
-Required fields
-^^^^^^^^^^^^^^^
+Format and required fields
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``name``: Dataset name; human-readable (~70 char)
-- ``description``: Brief description of dataset; human-readable (~170 char)
-- ``platformName``: Short description of platform on which data was generated; human-readable (~30 char)
-- ``datasetConfig``: Path to :ref:`sample phenotype table <add-data-pheno>`
-- ``groupCols``: Column names of `sample phenotype table <add-data-pheno>` that EDB should allow samples to be grouped by; comma-separated list, case-sensitive
-- ``groupOrder``: Path to :ref:`group order file <add-data-goruping>`
-- ``defaultGroup``: Name of group that serves as the default value in the *Group by* dropdown box of EDB interface; must be a column name of the `sample phenotype table <add-data-pheno>`, case-sensitive
-- ``chromSizes``: Path to text file containing genome sequence sizes. This file should be the output of `fetchChromSizes` from Kent utilities at UCSC.
-- ``genomeName``: Name of genome build ; must correspond to a `UCSC release name <https://genome.ucsc.edu/FAQ/FAQreleases.html>`
-- ``ideoFile``: Path to text file corresponding to UCSC ``cytoBandIdeo`` table. **Header?**
-- ``annoConfig``: Path to config file for genome annotation. **TODO: Add link**
-- ``datatype``: Datatype. Currently, one of ``{ bigwig , BSseq }``. Indicates how data should be processed; most single continuous traces (e.g. coverage, tiling microarrays) can use the 'bigwig' setting.
++-------------------+--------------------------------------------------------------------------------------+
+| key               | description                                                                          |
++===================+======================================================================================+
+|``name``           | Dataset name; human-readable (~70 char)                                              |
++-------------------+--------------------------------------------------------------------------------------+
+|``description``    | Brief description of dataset; human-readable (~170 char)                             |
++-------------------+--------------------------------------------------------------------------------------+
+|``platformName``   | Short description of platform on which data was generated; human-readable (~30 char) |
++-------------------+--------------------------------------------------------------------------------------+
+|``datasetConfig``  | Path to :ref:`sample phenotype table <add-data-pheno>`                               |
++-------------------+--------------------------------------------------------------------------------------+
+| ``groupCols``     | Column names of `sample phenotype table <add-data-pheno>` that EDB should allow      |
+|                   | samples to be grouped by; comma-separated list, case-sensitive                       |
++-------------------+--------------------------------------------------------------------------------------+
+| ``groupOrder``    | Path to :ref:`group order file <add-data-grouping>`                                  |
++-------------------+--------------------------------------------------------------------------------------+
+| ``defaultGroup``  | Name of group that serves as the default value in the *Group by* dropdown box of     |
+|                   | EDB interface; must be a column name of the `sample phenotype table <add-data-pheno>`|
+|                   | , case-sensitive                                                                     |
++-------------------+--------------------------------------------------------------------------------------+
+| ``chromSizes``    | Path to text file containing genome sequence sizes. This file should be the output   |
+|                   | of `fetchChromSizes` from Kent utilities at UCSC.                                    |
++-------------------+--------------------------------------------------------------------------------------+
+| ``genomeName``    | Name of genome build ; must correspond to a                                          | 
+|                   | `UCSC release name <https://genome.ucsc.edu/FAQ/FAQreleases.html>`                   |
++-------------------+--------------------------------------------------------------------------------------+
+| ``ideoFile``      | Path to text file corresponding to UCSC ``cytoBandIdeo`` table. **Header?**          |
++-------------------+--------------------------------------------------------------------------------------+
+| ``annoConfig``    | Path to config file for genome annotation. **TODO: Add link**                        |
++-------------------+--------------------------------------------------------------------------------------+
+|``datatype``       | Datatype. Currently, one of ``{ bigwig , BSseq }``. Indicates how data should be     |
+|                   | processed; most single continuous traces (e.g. coverage, tiling microarrays) can use |
+|                   | the 'bigwig' setting.                                                                |
++-------------------+--------------------------------------------------------------------------------------+
 
-Separately, there may be datatype-specific config parameters.
+All the above fields are required and must not contain missing values.
 
-bigwig
-^^^^^^^
+Variables for different datatypes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*bigwig:*
+
 This datatype has no required parameters.
 
-BSseq
-^^^^^^^
+*BSseq:*
+
 - ``BSseq__COV_POS``: Column index of tabix file which contains base coverage
 - ``BSseq__M_POS``: Column index of tabix file which contains number of methylated reads at that base ("M" read count)
 
-Example config file
-^^^^^^^^^^^^^^^^^^^^
+Example dataset config file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
 	# REQUIRED: MAIN config flags --- must be in all datasets
@@ -135,7 +162,7 @@ Example config file
 	BSseq__COV_POS  6
 	BSseq__M_POS    5
 
-EDB requires that all dataset config files be located at the path specified in the special ``config_location.txt`` file. Recall that this file is at ``/path/to/EDB/code/config_location.txt``.
+EDB requires that all dataset config files be located at the path specified in the special ``config_location.txt`` file. Recall that this file is at ``<EDBServerRoot>/config_location.txt``.
 
 :ref:`Back to top <add_dataset>`
 
@@ -147,13 +174,20 @@ Sample phenotype table
 This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
 The browser expects the following columns, named exactly in this way:
 
-Required columns
+Format
 ^^^^^^^^^^^^^^^^
-- sampleName: 
-- bigDataURL: Location of data file
-- all grouping columns as described in the :ref:`grouping order <add-data-grouping>` file.
 
-Example sample phenotype table
++-------------------+--------------------------------------------------------------------------------------------+  
+| column name       |   expected value                                                                           |
++===================+============================================================================================+
+| ``sampleName``    | unique identifier, no spaces                                                               |
++-------------------+--------------------------------------------------------------------------------------------+  
+| ``bigDataURL``    | absolute path to data source (e.g. `.bw` file)                                             |
++-------------------+--------------------------------------------------------------------------------------------+  
+| ``...``           | all grouping columns as described in the :ref:`grouping order <add-data-grouping>` file.   |
++-------------------+--------------------------------------------------------------------------------------------+  
+
+Example phenotype table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
@@ -170,8 +204,6 @@ Example sample phenotype table
 	Hs 55 yr NeuN-  Adult   Non-Neurons UMB 797 M   /My_Shiny_DataDir/data/GSM1173777_allC.MethylC-Seq_hs_fc_male_55yr_NeuN_neg.chr1.txt.gz
 	HUES6   Immortal    ESC -   F   /My_Shiny_DataDir/data/GSM1173778_allC.MethylC-Seq_hs_hues6.chr1.txt.gz
 
-
-
 Groups and grouping order
 ---------------------------
 
@@ -183,14 +215,18 @@ The :code:`group_order.txt` file is a tab-delimited file containing a table of t
 
 In addition to these groups, the browser allows a non-grouping option - i.e. viewing sample-specific data - with "Grouping: (none)". 
 
-As an example::
+Example group order file
+^^^^^^^^^^^^^^^^^^^^^^^^^ 
+::
 
 	groupID	groupOrder
 	Tissue	Brain,Sperm
 	Diagnosis	Control,Schizophrenia,Bipolar disorder
 	TimeOfSampling	Before_Treatment,During_Treatment,After_Treatment
 
-For this dataset, the browser would show 4 grouping options: Tissue, Diagnosis, TimeOfSampling, (none).
+For this dataset, the browser would show 4 grouping options: `Tissue`, `Diagnosis`, `TimeOfSampling`, `(none)`. 
+
+The `(none)` option is automatically added, and allows samples to be inspected individually instead of being grouped.
 
  :ref:`Back to top <add_dataset>`
 
@@ -239,20 +275,84 @@ If not, stop here and check the following:
 * Have the paths been correctly updated for all dataset directories?
 * Is config_location.txt pointing to the correct data directory?
 
-========================
-Add annotation sources
-========================
+=================================
+Adding custom annotation tracks
+=================================
 
-This is the directory structure for annotation sources::
+Annotation files are expected to live under ``<dataRootDir>/anno`` where ``<dataRootDir>`` is the directory to which ``config_location.txt`` points. Sources are organized by genome build as in the example below. EDB uses the BioConductor `Gviz <http://www.bioconductor.org/packages/devel/bioc/html/Gviz.html>`_ package to construct annotation objects.
+Refresh the EDB browser page and reload dataset to see the listing of new annotation sources.
 
-		 	   |------ hg19
-			   		   |------ cpgIslandExt.txt
-					   |------ cytoBandIdeo.txt
-					   |------ TxDb.Hsapiens.UCSC.hg19.refGene.sqlite
-			   |------ mm9
-			   		   |------ cpgIslandExt.txt
-					   |------ LAD_NPC_mm9.txt
+Directory structure for custom annotation
+-------------------------------------------
 
-This is normal text again.
+::
+
+   <dataRootDir>/
+        anno/
+    	  |------ hg19/
+	       		   |------ cpgIslandExt.txt
+				   |------ cytoBandIdeo.txt
+				   |------ TxDb.Hsapiens.UCSC.hg19.refGene.sqlite
+				   |------ anno_config.txt
+          |------ mm9/
+	    		   |------ cpgIslandExt.txt
+				   |------ LAD_NPC_mm9.txt
+				   |------ anno_config.txt
+                       
+
+``anno_config.txt``
+---------------------
+``anno_config.txt`` s used by EDB to get a listing of all available annotation for a genome build. EDB gets the genome build for the current dataset as the value of the ``genomeName`` variable in the dataset config file. It then refers to ``<dataRootDir>/<genomeName>/anno_config.txt`` for a list of all annotation available for that genome build. ``anno_config.txt`` is expected to be a tab-delimited file with rows representing each annotation source, and the following columns:
+
++-------------------+-----------------------------------------------------+
+| column            | description                                         |
++===================+=====================================================+
+| trackName         | one-word unique identifier for track                |
++-------------------+-----------------------------------------------------+
+| name              | title of track as it would appear in EDB (<50 char) |
++-------------------+-----------------------------------------------------+
+| description       | (currently unused)                                  |
++-------------------+-----------------------------------------------------+
+| trackType         | See allowed values below                            |
++-------------------+-----------------------------------------------------+
+| defaultView       | ``[dense|squish|full]``. Similar to UCSC tracks.    |
++-------------------+-----------------------------------------------------+
+| bigDataURL        | absolute path to source file                        |
++-------------------+-----------------------------------------------------+
+| color             | (currently unused)                                  |
++-------------------+-----------------------------------------------------+
+| format            | See values in table below.                          |
++-------------------+-----------------------------------------------------+
+| sizes             | number between 0 and 1. determines the height of    | 
+|                   | the track. See ``plotTracks()`` method in Gviz      |
++-------------------+-----------------------------------------------------+
+
+Columns except ``description`` and ``color`` must not have missing values.
+
+EDB currently supports the following file formats. Behaviour is undefined if the
+``format``-``trackType`` combinations below are not respected.
+
++-------------------+--------------------------------------+--------------------------+
+| EDB ``format``    | input file format / object           | EDB ``trackType``        |
++===================+======================================+==========================+
+| ``tabix``         | tabix (`.gz,.gz.tbi`)                | ``AnnotationTrack``      |
++-------------------+--------------------------------------+--------------------------+
+| ``bigwig``        | bigwig (`.bw`)                       | ``AnnotationTrack``      |
++-------------------+--------------------------------------+--------------------------+
+| ``txdb``          | BioC TranscriptDB  object (`.sqlite`)| ``GeneRegionTrack``      |
++-------------------+--------------------------------------+--------------------------+
+
+Visit these pages to learn more about the `tabix <http://samtools.sourceforge.net/tabix.shtml>`_ ,  `bigwig <http://genome.ucsc.edu/goldenpath/help/bigWig.html>`_  and `BioC TranscriptDB <http://www.bioconductor.org/packages/release/bioc/vignettes/GenomicFeatures/inst/doc/GenomicFeatures.pdf>`_ format/objects. 
+
+Sample ``anno_config.txt`` file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: none
+
+    trackName   name    description trackType   defaultView bigDataURL  color   format  sizes
+    cpgIslands  CpG Islands CpG Islands AnnotationTrack dense   /home/docker/EDB_demodata/anno/hg19/cpgIslandExt.bed.gz green   tabix   0.15
+    refGene RefSeq genes    RefSeq genes    GeneRegionTrack squish  /home/docker/EDB_demodata/anno/hg19/TxDb.Hsapiens.UCSC.hg19.refGene.sqlite  mediumblue  TxDb    0.1 
+    
+
 
 :ref:`Back to top <add_dataset>`
