@@ -8,23 +8,60 @@
 Install instructions
 =======================
 
-This step only needs to be done once by the web administrator setting up the application. It does not have to be repeated by all endusers.
-You will need access to a machine running a web server viewable to your users.
+Install environment
+---------------------
+This step only needs to be done initially by a web administrator setting up the application. It does not have to be repeated by all end users.
+EDB should be installed on a machine on which you can run a web server accessible to all your users.
 
 All EDB development has been done on Unix machines, but installation should work on any machine that can run Shiny server. 
 
 The recommended machine configuration is
 
-- OS: the EDB has been tested on Ubuntu 10.04, 12.04 and 14.04, but any machine that runs Shiny server should work.
+- OS: the EDB has been tested on Debian, Ubuntu 10.04, 12.04 and 14.04, but any machine that runs Shiny server should work.
 - > 7 Gb RAM
 - > 2 Gb disk; 2.0G is the size of all software dependencies and the demo dataset.
 
 These instructions are for a machine running Ubuntu 14.04 (LTS). I have also successfully set up the app on Debian Wheezy LTS.
 Each package will prompt saying something along the lines of "This package with require XYZ space. Continue [Y/n]?". Type "Y".
 
+Automatic install using docker
+-----------------------------
+
+
+.. figure:: images/docker-logo-loggedout.png
+    :alt: docker
+    :align: left
+
+`Docker <https://www.docker.com>`_ is a hugely popular platform for deploying software in "containers". EDB can be easily installed with a custom `dockerfile <https://github.com/shraddhapai/shiny-data-browseR/tree/master/dockr_edb>`_ in the EDB repo.
+
+If you haven't already done so, first `install docker <https://docs.docker.com/installation/#installation>`_ on your target machine. Then build at command line. 
+
+Note: The ``build`` itself takes ~15-20 minutes, as it is installing R, the shiny server, associated BioConductor and Shiny dependences. As part of this process, the dockerfile also downloads the demo dataset (~286Mb). 
+
+So take a break and do something else while it's running.
+
+.. code-block:: none
+    
+    git clone https://github.com/shraddhapai/shiny-data-browseR.git
+    cd shiny-data-browseR
+    docker build docker_edb
+
+When the build is complete, you should be provided with an image identifier (e.g. ``af9ca39a5c48``).
+
+Now start a new container from the image:
+
+.. code-block:: none
+    
+    docker run -p 3838:3838 -d af9ca39a5c48
+
+At this point you should be able to open a web browser on your target machine to ``http://localhost:3838/EDB``, or if you're using boot2docker, to ``http://192.168.59.103:3838/EDB``.
+
+Manual install
+---------------------
+
 
 Clone the EDB repo
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 Ignore the first line below if your machine already has git.
 
@@ -34,7 +71,8 @@ Ignore the first line below if your machine already has git.
 	git clone https://github.com/shraddhapai/shiny-data-browseR.git
 
 Install R (>=3.1.0)
----------------------
+^^^^^^^^^^^^^^^^^^^^
+
 .. code-block:: none
 
 	sudo add-apt-repository ppa:marutter/rrutter
@@ -57,7 +95,7 @@ Then execute ~/.profile:
 
 
 Install shiny server
----------------------
+^^^^^^^^^^^^^^^^^^^^
 
 First install the R shiny package:
 
@@ -83,47 +121,40 @@ At this point, if you point your web browser to <myIpAddress>:3838, you should s
 	:alt: Shiny server test page, viewed when browser point to <my-ip-address>:3838
 
 Install Unix dependencies for the R/BioConductor packages
------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: none
 
 	sudo apt-get install libcurl4-openssl-dev libxml2-dev
 
 Install R and BioConductor packages
------------------------------------
-
-Start R (be sure to start as admin):
-
-.. code-block:: none
-
-	sudo R
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Select your local mirror when prompted (e.g. 15 for Toronto)
 
 .. code-block:: none
 
-	install.packages(c("shinyBS","doMC","RColorBrewer","latticeExtra"))
+    R -e "install.packages(c('shinyBS','doMC','RColorBrewer', 'matrixStats'), repos='http://cran.rstudio.com/'); " 
 
 Install BioConductor and package dependencies for the modified BioC package, "Gviz".
 
 .. code-block:: none
 
-	source("http://bioconductor.org/biocLite.R")
-	biocLite(c("BioBase", "GenomicRanges", "rtracklayer", "GenomicFeatures","biovizBase","Rsamtools"))
+    R -e "source('http://bioconductor.org/biocLite.R'); biocLite(c('Biobase','GenomicRanges','rtracklayer','GenomicFeatures','biovizBase','Rsamtools'));" 
 
-Install customized "Gviz" package
-------------------------------------
-Now that all BioC dependencies have been installed, install the 'Gviz' package included in the EDB source tree. *This modified copy of Gviz is temporary. Future versions of EDB will get an updated version of Gviz directly from BioC.*
+Install development version of Gviz
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Exit R and insert the following at command line:
 
 .. code-block:: none
 
-	cd shiny-data-browser/dependencies
-	sudo R CMD INSTALL Gviz
+	wget http://www.bioconductor.org/packages/devel/bioc/src/contrib/Gviz_1.11.2.tar.gz
+    R -e "install.packages('Gviz_1.11.2.tar.gz')"
+    
 
 Configure EDB
-------------------------------------
+^^^^^^^^^^^^^^^
 
 That's it! Installation is done. Now we configure the server.
 
@@ -150,12 +181,5 @@ At this point, you should be able to see the EDB interface in your web browser. 
 	:alt: EDB initial page, without datasets
 
 Great! Now let's proceed to adding our custom datasets.
-
-
-	
-	
-
-	
-
 
 
