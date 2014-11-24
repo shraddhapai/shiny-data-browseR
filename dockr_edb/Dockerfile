@@ -15,25 +15,25 @@ RUN apt-get install -y \
     git
 
 # Get EDB repo + devel version of Gviz + EDB demo data
-ADD EDB_demodata.tar.gz /EDB_demodata.tar.gz   
-# TODO: move to wget when issue is fixed
-# wget http://epidatabrowser.camh.ca:3838/demo_datasets/EDB_demodata.tar.gz && \
+#COPY EDB_demodata.tar.gz EDB_demodata.tar.gz   
 
-RUN git clone https://github.com/shraddhapai/shiny-data-browseR.git 
-    tar xvfz EDB_demodata.tar.gz && \
-    mv EDB_demodata /home/docker/. && \
-    wget http://www.bioconductor.org/packages/devel/bioc/src/contrib/Gviz_1.11.2.tar.gz 
+# Download EDB repo + devel Gviz + demo data
+RUN git clone https://github.com/shraddhapai/shiny-data-browseR.git && \ 
+    wget http://epidatabrowser.camh.ca:3838/demo_datasets/EDB_demodata.tar.gz && \
+    wget http://www.bioconductor.org/packages/devel/bioc/src/contrib/Gviz_1.11.2.tar.gz
 
 # install R + BioConductor dependencies
 RUN R -e "install.packages(c('shinyBS','doMC','RColorBrewer', 'matrixStats'), repos='http://cran.rstudio.com/'); " && \
     R -e "source('http://bioconductor.org/biocLite.R'); biocLite(c('Biobase','GenomicRanges','rtracklayer','GenomicFeatures','biovizBase','Rsamtools'));" && \
     R -e "install.packages('Gviz_1.11.2.tar.gz')"
 
-# move EDB code to server directory and create file pointing to demo data location
+# move EDB code + demo data to server directory and create file pointing to demo data location
 RUN mkdir /srv/shiny-server/EDB && \
     cp /shiny-data-browseR/*.R /srv/shiny-server/EDB/. && \
     cp -r /shiny-data-browseR/www /srv/shiny-server/EDB/. && \
     cp -r /shiny-data-browseR/data_types /srv/shiny-server/EDB/. && \
+    tar xvfz EDB_demodata.tar.gz && \
+    mv EDB_demodata /home/docker/. && \
     echo "/home/docker/EDB_demodata/" > /srv/shiny-server/EDB/config_location.txt
 
 # start the server
