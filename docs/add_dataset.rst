@@ -35,10 +35,11 @@ Let us assume that EDB datasets are all located at ``<dataRoot>``.
 **Step 4: group order:** Add a file to specify the :ref:`ordering of categorical variables<add-data-grouping>`
 
 
+.. _add-data-exampledir:
+
 Example directory structure for datasets
 ----------------------------------------------------------
 
-.. _add-data-exampledir:
 
 This is what a simple project directory structure should look like when you are done. The example below assumes that all datasets and associated config files are located at ``<dataRoot>``. Coloured arrows show how the master config file references the phenotype table and group order table.
 
@@ -75,10 +76,10 @@ In this example we have two datasets, one showing epigenetic dynamics in mouse b
 	     |----anno
 
 
+.. _add-data-config:
+
 Dataset config file
 -----------------------
-
-.. _add-data-config:
 
 The dataset config file contains general metadata for the dataset. It is a tab-delimited file with two columns: a key (controlled word for config parameter) and value.
 
@@ -166,10 +167,10 @@ EDB requires that all dataset config files be located at the path specified in t
 
 :ref:`Back to top <add_dataset>`
 
+.. _add-data-pheno:
+
 Sample phenotype table
 ------------------------
-
-.. _add-data-pheno:
 
 This tab-delimited file contains sample-wise metadata, including locations of data files. Each row should contain data for one sample, and each column should contain a unique type of metadata. Column order is unimportant to the browser.
 The browser expects the following columns, named exactly in this way:
@@ -204,10 +205,10 @@ Example phenotype table
 	Hs 55 yr NeuN-  Adult   Non-Neurons UMB 797 M   /My_Shiny_DataDir/data/GSM1173777_allC.MethylC-Seq_hs_fc_male_55yr_NeuN_neg.chr1.txt.gz
 	HUES6   Immortal    ESC -   F   /My_Shiny_DataDir/data/GSM1173778_allC.MethylC-Seq_hs_hues6.chr1.txt.gz
 
+.. _add-data-grouping:
+
 Groups and grouping order
 ---------------------------
-
-.. _add-data-grouping:
 
 The :code:`group_order.txt` file is a tab-delimited file containing a table of two columns:
 #. groupID: Group name, must match a column name in the phenotype matrix
@@ -274,6 +275,8 @@ If not, stop here and check the following:
 * Is the data root directory in a location with read permissions for user "shiny"?
 * Have the paths been correctly updated for all dataset directories?
 * Is config_location.txt pointing to the correct data directory?
+
+.. _add-anno:
 
 =================================
 Adding custom annotation tracks
